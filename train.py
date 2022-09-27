@@ -32,11 +32,10 @@ def train(args, model, device, train_loader, optimizer, epoch, path):
         loss = F.nll_loss(output, target)
         loss.backward()
         optimizer.step()
-        if batch_idx % args.log_interval == 0:
-            msg = 'Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.item())
-            print_msg(path+"trainmsg.txt", msg)
+        msg = 'Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+            epoch, batch_idx * len(data), len(train_loader.dataset),
+            100. * batch_idx / len(train_loader), loss.item())
+        print_msg(path+"trainmsg.txt", msg)
 
 def test(model, device, test_loader, path, epoch):
     model.eval()
