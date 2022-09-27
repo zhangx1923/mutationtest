@@ -1,3 +1,4 @@
+from random import choices
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -90,20 +91,20 @@ def main():
                         help='learning rate (default: 1.0)')
     parser.add_argument('--gamma', type=float, default=0.7, metavar='M',
                         help='Learning rate step gamma (default: 0.7)')
-    parser.add_argument('--cuda', action='store_true', default=False,
-                        help='cuda=true or cpu=false')
+    parser.add_argument('--device', type=str, default='cpu',
+                        choices=['cpu','cuda'])
     parser.add_argument('--gpu', type=int, default=0, metavar='N',
                         help='index of gpu you want to use')
     parser.add_argument('--evaluate', action='store_true', default=False,
                         help='do not train=True, train+evaluate=False') 
     args = parser.parse_args()
 
-    dt = str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    dt = str(datetime.datetime.now().strftime('%Y%m%d %H%M%S'))
     folder_path = dt + "/"
 
     create_floder(folder_path)
 
-    use_cuda = args.cuda and torch.cuda.is_available()
+    use_cuda = args.device == 'cuda' and torch.cuda.is_available()
     if use_cuda:
         device = torch.device("cuda:" + str(args.gpu))
     else:
