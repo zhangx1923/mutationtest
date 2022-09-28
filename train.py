@@ -94,7 +94,7 @@ def main():
                         choices=['cpu','cuda'])
     parser.add_argument('--gpu', type=int, default=0, metavar='N',
                         help='index of gpu you want to use')
-    parser.add_argument('--evaluate', type=str, default='train', choices=['train', 'eva']
+    parser.add_argument('--evaluate', type=str, default='train', choices=['train', 'eva'],
                         help='train=train, evaluate=eva') 
     args = parser.parse_args()
 
