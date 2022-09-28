@@ -2,6 +2,15 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+#CNN中的神经元：n个卷积核，每个卷积核卷一次生成一个神经元
+#卷积核3*3*channel，对应一个bias
+#https://cs231n.github.io/convolutional-networks/ local Connectivity 一节
+#mutation types:
+#1. change weights
+#2. change bias
+#3. remove neurons  3.1!! conv layer   3.2 fc layer
+
+#逐个删除神经元，生成图片
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -16,8 +25,11 @@ class Net(nn.Module):
     def setMutation(self, types):
         self.mutation = types
 
-    #no.1 mutation, change weights
     def forward_mu1(self, x):
+        print(x.shape)
+        x = self.conv1(x)
+        print(x.shape)
+
         output = F.log_softmax(x, dim=1)
         return output
 

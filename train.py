@@ -94,8 +94,8 @@ def main():
                         choices=['cpu','cuda'])
     parser.add_argument('--gpu', type=int, default=0, metavar='N',
                         help='index of gpu you want to use')
-    parser.add_argument('--evaluate', action='store_true', default=False,
-                        help='do not train=True, train+evaluate=False') 
+    parser.add_argument('--evaluate', type=str, default='train', choices=['train', 'eva']
+                        help='train=train, evaluate=eva') 
     args = parser.parse_args()
 
     dt = str(datetime.datetime.now().strftime('%Y%m%d %H%M%S'))
@@ -128,7 +128,7 @@ def main():
 
     mutation_types = [1]
 
-    if not args.evaluate:
+    if args.evaluate == 'train':
         #train + test
         for epoch in range(1, args.epochs + 1):
             train(args, model, device, train_loader, optimizer, epoch, folder_path)
