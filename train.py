@@ -59,7 +59,7 @@ def test_mutation(model, device, test_loader, path, epoch, mutation):
     model.eval()
     test_loss = 0
     correct = 0
-    model.setMutation(0)
+    model.setMutation(mutation)
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
