@@ -80,4 +80,4 @@ class Net(nn.Module):
             output = F.log_softmax(x, dim=1)
             return output
         elif self.mutation == 1:
-            self.forward_mu1(x)
+            return self.forward_mu1(x)
