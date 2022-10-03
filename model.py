@@ -44,6 +44,7 @@ class Net(nn.Module):
                     for n in range(len(fea[m])):
                         if (m+n) % 2 != 0:
                             fea[m][n] = 0
+        return x
 
 
     def forward_mu1(self, x):
