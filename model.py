@@ -29,6 +29,16 @@ class Net(nn.Module):
         print(x.shape)
         x = self.conv1(x)
         print(x.shape)
+        for ins in x:
+            for i,fea in enumerate(ins):
+                #each feature map
+                for m in range(len(fea)):
+                    for n in range(len(fea[m])):
+                        print(fea[m][n])
+                        fea[m][n] = 0
+                        print(fea[m][n])
+                        print("!!!")
+
 
         output = F.log_softmax(x, dim=1)
         return output
