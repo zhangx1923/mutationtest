@@ -126,7 +126,7 @@ def main():
     #load data
     train_loader, test_loader = load_data(train_kwargs, test_kwargs)
 
-    mutation_types = [1]
+    mutation_types = [i for i in range(1, 13)]
 
     print("begin to "+ str(args.evaluate))
 

@@ -25,7 +25,7 @@ class Net(nn.Module):
     def setMutation(self, types):
         self.mutation = types
 
-    def __remove1(self, x):
+    def __remove(self, x, mu):
         #1.take one from every two neurons (first row from the beginning)
         #2.take one from every two neurons (first row from the second neuron)
         #3.left top side of diagonal
@@ -36,25 +36,62 @@ class Net(nn.Module):
         #8.keep this feature map
         #9.right top side of diagonal
         #10.left bottom side of diagonal
-        
+        #11. left
+        #12. right
+        if mu == 0 or mu == 8:
+            #no mutation test for this case
+            return x
+
         for ins in x:
             for i,fea in enumerate(ins):
                 #each feature map
                 for m in range(len(fea)):
                     for n in range(len(fea[m])):
-                        if (m+n) % 2 != 0:
-                            fea[m][n] = 0
+                        if mu == 1:
+                            if (m+n) % 2 != 0:
+                                fea[m][n] = 0
+                        elif mu == 2:
+                            if (m+n) % 2 == 0:
+                                fea[m][n] = 0                           
+                        elif mu == 3:
+                            if m >= n:
+                               fea[m][n] = 0  
+                        elif mu == 4:
+                            if m < n:
+                                fea[m][n] = 0 
+                        elif mu == 5:
+                            if m <= len(fea) // 2:
+                                fea[m][n] = 0 
+                        elif mu == 6:
+                            if m > len(fea) // 2:
+                                fea[m][n] = 0 
+                        elif mu == 7:
+                            fea[m][n] = 0 
+                        elif mu == 8:
+                            pass
+                        elif mu == 9:
+                            if n >= m:
+                                fea[m][n] = 0 
+                        elif mu == 10:
+                            if n < m:
+                                fea[m][n] = 0 
+                        elif mu == 11:
+                            if n <= len(fea[m]) // 2:
+                                fea[m][n] = 0 
+                        elif mu == 12:
+                            if n > len(fea[m]) // 2:
+                                fea[m][n] = 0 
         return x
 
 
-    def forward_mu1(self, x):
+    def forward(self, x):
         x = self.conv1(x)
-        x = self.__remove1(x)
+        x = self.__remove(x, self.mutation)
         x = F.relu(x)
         x = self.conv2(x)
-        #x = self.__remove1(x)
+        x = self.__remove(x, self.mutation)
         x = F.relu(x)
-        x = F.max_pool2d(x,2)
+        x = F.max_pool2d(x, 2)
         x = self.dropout1(x)
         x = torch.flatten(x, 1)
         x = self.fc1(x)
@@ -63,21 +100,3 @@ class Net(nn.Module):
         x = self.fc2(x)
         output = F.log_softmax(x, dim=1)
         return output
-
-    def forward(self, x):
-        if self.mutation == 0:
-            x = self.conv1(x)
-            x = F.relu(x)
-            x = self.conv2(x)
-            x = F.relu(x)
-            x = F.max_pool2d(x, 2)
-            x = self.dropout1(x)
-            x = torch.flatten(x, 1)
-            x = self.fc1(x)
-            x = F.relu(x)
-            x = self.dropout2(x)
-            x = self.fc2(x)
-            output = F.log_softmax(x, dim=1)
-            return output
-        elif self.mutation == 1:
-            return self.forward_mu1(x)
