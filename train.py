@@ -128,6 +128,8 @@ def main():
 
     mutation_types = [1]
 
+    print("begin to "+ str(args.evaluate))
+
     if args.evaluate == 'train':
         #train + test
         for epoch in range(1, args.epochs + 1):
