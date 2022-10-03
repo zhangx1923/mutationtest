@@ -155,15 +155,15 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        if self.mutationType == 1:
+        if self.mutationType == 's':
             x = self.__remove(x, self.mutation)
-        elif self.mutationType == 2:
+        elif self.mutationType == 'c':
             x = self.__remove1(x, self.mutation)
         x = F.relu(x)
         x = self.conv2(x)
-        if self.mutationType == 1:
+        if self.mutationType == 's':
             x = self.__remove(x, self.mutation)
-        elif self.mutationType == 2:
+        elif self.mutationType == 'c':
             x = self.__remove1(x, self.mutation)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)

@@ -55,11 +55,12 @@ def test(model, device, test_loader, path, epoch):
         100. * correct / len(test_loader.dataset))
     print_msg(path+"testmsg.txt", msg)
 
-def test_mutation(model, device, test_loader, path, epoch, mutation):
+def test_mutation(model, device, test_loader, path, epoch, mutation, tp):
     model.eval()
     test_loss = 0
     correct = 0
     model.setMutation(mutation)
+    model.setMutationType(tp)
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
@@ -145,7 +146,7 @@ def main():
     else:
         model.load_state_dict(torch.load("mnist_cnn.pt"))
         for mt in mutation_types:
-            test_mutation(model, device, test_loader, folder_path, 'End', mt)
+            test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
 
     #save model
     torch.save(model.state_dict(), "mnist_cnn.pt")
