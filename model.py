@@ -18,12 +18,17 @@ class Net(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
+        self.dropout3 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(9216, 128)
         self.fc2 = nn.Linear(128, 10)
         self.mutation = 0
+        self.mutationType = 0
 
     def setMutation(self, types):
         self.mutation = types
+
+    def setMutationType(self, types):
+        self.mutationType = types
 
     def __remove(self, x, mu):
         #1.take one from every two neurons (first row from the beginning)
@@ -38,9 +43,13 @@ class Net(nn.Module):
         #10.left bottom side of diagonal
         #11. left
         #12. right
+        # 13 dropout
         if mu == 0 or mu == 8:
             #no mutation test for this case
             return x
+        
+        if mu == 13:
+            return self.dropout3(x)
 
         for ins in x:
             for i,fea in enumerate(ins):
@@ -83,13 +92,79 @@ class Net(nn.Module):
                                 fea[m][n] = 0 
         return x
 
+    def __remove1(self, x, mu):
+        #combine the following:
+        #1.1.take one from every two neurons (first row from the beginning)
+        #1.2.take one from every two neurons (first row from the second neuron)
+        #2.1.left top side of diagonal
+        #2.2.right bottom side of diagonal
+        #3.1.top
+        #3.2.bottom
+        #4.1.remove this feature map
+        #4.2.keep this feature map
+        #5.1.right top side of diagonal
+        #5.2.left bottom side of diagonal
+        #6.1. left
+        #6.2. right
+        #7 dropout self
+        if mu == 0:
+            #no mutation test for this case
+            return x
+        
+        if mu == 7:
+            return self.dropout3(x)
+        
+        for ins in x:
+            for i,fea in enumerate(ins):
+                #each feature map
+                for m in range(len(fea)):
+                    for n in range(len(fea[m])):
+                        if mu == 1:
+                            if (m+n) % 2 != 0 and i%2 ==0:
+                                fea[m][n] = 0
+                            elif i%2 != 0 and (m+n) % 2 == 0:
+                                fea[m][n] = 0                          
+                        elif mu == 2:
+                            if m >= n and i%2 == 0:
+                               fea[m][n] = 0  
+                            elif m<n and i%2 != 0:
+                                fea[m][n] = 0 
+                        elif mu == 3:
+                            if m <= len(fea) // 2 and i%2 ==0:
+                                fea[m][n] = 0 
+                            elif m > len(fea) // 2 and i%2 != 0:
+                                fea[m][n] = 0 
+
+                        elif mu == 4:
+                            if i % 2 == 0:
+                                fea[m][n] = 0
+                            else:
+                                pass 
+                        elif mu == 5:
+                            if n >= m and i%2 ==0:
+                                fea[m][n] = 0 
+                            elif n < m and i%2 !=0:
+                                fea[m][n] = 0 
+                        elif mu == 6:
+                            if n <= len(fea[m]) // 2 and i%2 ==0:
+                                fea[m][n] = 0 
+                            elif n > len(fea[m]) // 2 and i%2 ==0:
+                                fea[m][n] = 0 
+        return x
+
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.__remove(x, self.mutation)
+        if self.mutationType == 1:
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 2:
+            x = self.__remove1(x, self.mutation)
         x = F.relu(x)
         x = self.conv2(x)
-        x = self.__remove(x, self.mutation)
+        if self.mutationType == 1:
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 2:
+            x = self.__remove1(x, self.mutation)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = self.dropout1(x)

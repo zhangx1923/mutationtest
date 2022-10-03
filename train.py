@@ -96,6 +96,8 @@ def main():
                         help='index of gpu you want to use')
     parser.add_argument('--evaluate', type=str, default='train', choices=['train', 'eva'],
                         help='train=train, evaluate=eva') 
+    parser.add_argument('--mutationType', type=str, default='s', choices=['s', 'c'],
+                        help='s=single, one kind of mutation; c=combine, combine two kind of mutation') 
     args = parser.parse_args()
 
     dt = str(datetime.datetime.now().strftime('%Y%m%d %H%M%S'))
@@ -126,7 +128,8 @@ def main():
     #load data
     train_loader, test_loader = load_data(train_kwargs, test_kwargs)
 
-    mutation_types = [i for i in range(1, 13)]
+
+    mutation_types = [i for i in range(1, 14)] if args.mutationType == 's' else [i for i in range(1,8)]
 
     print("begin to "+ str(args.evaluate))
 
