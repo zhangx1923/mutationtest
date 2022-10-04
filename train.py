@@ -76,6 +76,8 @@ def test_mutation(model, device, test_loader, path, epoch, mutation, tp):
     model.setMutation(mutation)
     model.setMutationType(tp)
     with torch.no_grad():
+        for a, b in test_loader:
+            print(a)
         for data, target in test_loader:
             print(123)
             data, target = data.to(device), target.to(device)
