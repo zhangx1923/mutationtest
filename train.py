@@ -159,15 +159,16 @@ def main():
                 test(model, device, test_loader, folder_path, epoch)
             scheduler.step()
         test(model, device, test_loader, folder_path, "End")
+        #save model
+        sd_path = args.dataset + "_cnn.pt"
+        torch.save(model.state_dict(), sd_path)
     else:
         path = args.dataset + "_cnn.pt"
         model.load_state_dict(torch.load(path))
         for mt in mutation_types:
             test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
 
-    #save model
-    sd_path = args.dataset + "_cnn.pt"
-    torch.save(model.state_dict(), sd_path)
+
 
 
 if __name__ == '__main__':
