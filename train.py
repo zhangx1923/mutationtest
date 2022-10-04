@@ -73,8 +73,8 @@ def test_mutation(model, device, test_loader, path, epoch, mutation, tp):
     model.eval()
     test_loss = 0
     correct = 0
-    model.setMutation(mutation)
-    model.setMutationType(tp)
+    # model.setMutation(mutation)
+    # model.setMutationType(tp)
     with torch.no_grad():
         for data, label in test_loader:
             data, label = data.to(device), label.to(device)
@@ -164,6 +164,7 @@ def main():
         torch.save(model.state_dict(), sd_path)
     else:
         path = args.dataset + "_cnn.pt"
+        print(path)
         model.load_state_dict(torch.load(path))
         for mt in mutation_types:
             test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
