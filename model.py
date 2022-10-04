@@ -62,7 +62,6 @@ class Net(nn.Module):
         #         fea = fea.scatter(1, index, tar)
         for ins in x:
             for i,fea in enumerate(ins):
-                print(fea[0])
                 for m in range(len(fea)):
                     for n in range(len(fea[m])):
                         if mu == 1:
@@ -99,7 +98,6 @@ class Net(nn.Module):
                         elif mu == 12:
                             if n > len(fea[m]) // 2:
                                 fea[m][n] = 0 
-                print(fea[0])
         return x
 
     def __remove1(self, x, mu):
