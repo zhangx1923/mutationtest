@@ -59,8 +59,8 @@ class Net(nn.Module):
                 row, col = fea.shape
                 index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(row)]).to(fea.device)
                 tar = torch.zeros_like(fea).to(fea.device)
-                print(index, row, col)
                 fea.scatter(1, index, tar)
+                print(fea)
 
         # for ins in x:
         #     for i,fea in enumerate(ins):
