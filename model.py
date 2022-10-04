@@ -62,7 +62,7 @@ class Net(nn.Module):
                 print(fea[0])
                 fea.scatter(1, index, tar)
                 print(fea[0])
-
+                print("!!!!!!!!!!!")
         # for ins in x:
         #     for i,fea in enumerate(ins):
         #         for m in range(len(fea)):
