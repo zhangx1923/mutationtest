@@ -10,17 +10,31 @@ from model import Net
 from tools import print_msg, create_floder
 import datetime
 
-def load_data(args1, args2):
-    transform=transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.1307,), (0.3081,))
-        ])
-    dataset1 = datasets.MNIST('../data', train=True, download=True,
-                    transform=transform)
-    dataset2 = datasets.MNIST('../data', train=False,
-                    transform=transform)
-    train_data_loader = torch.utils.data.DataLoader(dataset1,**args1)
-    test_data_loader = torch.utils.data.DataLoader(dataset2,**args2)
+def load_data(args1, args2, dataset):
+    if dataset == "mnist":
+        transform=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,))
+            ])
+        dataset1 = datasets.MNIST('../data', train=True, download=True,
+                        transform=transform)
+        dataset2 = datasets.MNIST('../data', train=False,
+                        transform=transform)
+        train_data_loader = torch.utils.data.DataLoader(dataset1,**args1)
+        test_data_loader = torch.utils.data.DataLoader(dataset2,**args2)
+    elif dataset == 'cifar':
+        transform=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))
+            ])        
+        dataset1 = datasets.CIFAR10('../data', train=True, download=True,
+                        transform=transform)
+        dataset2 = datasets.CIFAR10('../data', train=False,
+                        transform=transform)
+        train_data_loader = torch.utils.data.DataLoader(dataset1,**args1)
+        test_data_loader = torch.utils.data.DataLoader(dataset2,**args2)        
+    else:
+        train_data_loader = test_data_loader = None
     return train_data_loader, test_data_loader
 
 def train(args, model, device, train_loader, optimizer, epoch, path):
@@ -99,6 +113,9 @@ def main():
                         help='train=train, evaluate=eva') 
     parser.add_argument('--mutationType', type=str, default='s', choices=['s', 'c'],
                         help='s=single, one kind of mutation; c=combine, combine two kind of mutation') 
+    parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'cifar'],
+                        help='dataset, mnist or cifar10') 
+    
     args = parser.parse_args()
 
     dt = str(datetime.datetime.now().strftime('%Y%m%d %H%M%S'))
@@ -121,13 +138,13 @@ def main():
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
 
-    model = Net().to(device)
+    model = Net(args.dataset).to(device)
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
 
     #load data
-    train_loader, test_loader = load_data(train_kwargs, test_kwargs)
+    train_loader, test_loader = load_data(train_kwargs, test_kwargs, args.dataset)
 
 
     mutation_types = [i for i in range(1, 14)] if args.mutationType == 's' else [i for i in range(1,8)]
@@ -149,7 +166,8 @@ def main():
             test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
 
     #save model
-    torch.save(model.state_dict(), "mnist_cnn.pt")
+    sd_path = args.dataset + "_cnn.pt"
+    torch.save(model.state_dict(), sd_path)
 
 
 if __name__ == '__main__':

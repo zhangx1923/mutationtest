@@ -12,9 +12,9 @@ import torch.nn.functional as F
 
 #逐个删除神经元，生成图片
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, ds):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, 3, 1)
+        self.conv1 = nn.Conv2d(1, 32, 3, 1) if ds == "mnist" else nn.Conv2d(3, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
