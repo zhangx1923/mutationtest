@@ -69,7 +69,7 @@ class Net(nn.Module):
                     index = [[i for i in range(col-1, row-j-2, -1) ] for j in range(row)]
                     max_len = max([len(l) for l in index])
                     index = [l + l[-1:] * (max_len - len(l)) for l in index]
-                    index = torch.tensor().to(fea.device)
+                    index = torch.tensor(index).to(fea.device)
                 elif mu == 5:
                     #index = torch.tensor([[i for i in range(0, col, 1) ] for j in range(row//2)]).to(fea.device)
                     index = torch.tensor([i for i in range(0,col//2)])
