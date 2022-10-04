@@ -61,7 +61,7 @@ class Net(nn.Module):
                 tar = torch.zeros_like(fea).to(fea.device)
                 print(tar)
                 fea.scatter(1, index, tar)
-                print(fea)
+                #print(fea)
 
         # for ins in x:
         #     for i,fea in enumerate(ins):
