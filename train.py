@@ -11,9 +11,7 @@ from tools import print_msg, create_floder
 import datetime
 
 def load_data(args1, args2, dataset):
-    print(dataset)
     if dataset == "mnist":
-        print(dataset)
         transform=transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
@@ -77,9 +75,9 @@ def test_mutation(model, device, test_loader, path, epoch, mutation, tp):
     correct = 0
     model.setMutation(mutation)
     model.setMutationType(tp)
-    print("fun")
     with torch.no_grad():
-        print("with")
+        for a, b in test_loader:
+            print(1)
         for data, target in test_loader:
             print(data)
             data, target = data.to(device), target.to(device)
@@ -151,8 +149,6 @@ def main():
 
     #load data
     train_loader, test_loader = load_data(train_kwargs, test_kwargs, args.dataset)
-    print(test_loader)
-
 
     mutation_types = [i for i in range(1, 14)] if args.mutationType == 's' else [i for i in range(1,8)]
 
@@ -170,7 +166,6 @@ def main():
     else:
         model.load_state_dict(torch.load("mnist_cnn.pt"))
         for mt in mutation_types:
-            print(mt)
             test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
 
     #save model
