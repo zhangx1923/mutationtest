@@ -12,6 +12,7 @@ import datetime
 
 def load_data(args1, args2, dataset):
     if dataset == "mnist":
+        print(dataset)
         transform=transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
