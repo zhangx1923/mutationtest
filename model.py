@@ -19,7 +19,7 @@ class Net(nn.Module):
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
         self.dropout3 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(9216, 128)
+        self.fc1 = nn.Linear(9216, 128) if ds == "mnist" else nn.Linear(12544, 128)
         self.fc2 = nn.Linear(128, 10)
         self.mutation = 0
         self.mutationType = 0
