@@ -57,9 +57,8 @@ class Net(nn.Module):
                 #assign tar's (i,j) value to (i,j) position of fea
                 
                 row, col = fea.shape
-                index = torch.tensor([[i for i in range(j%2, row, 2) ] for j in range(col)])
+                index = torch.tensor([[i for i in range(j%2, row, 2) ] for j in range(col)]).to(fea.device)
                 tar = torch.zeros_like(fea).to(fea.device)
-                print(tar.device, fea.device, index.device)
                 fea.scatter(1, index, tar)
 
         # for ins in x:
