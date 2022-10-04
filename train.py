@@ -151,6 +151,7 @@ def main():
 
     #load data
     train_loader, test_loader = load_data(train_kwargs, test_kwargs, args.dataset)
+    print(test_loader)
 
 
     mutation_types = [i for i in range(1, 14)] if args.mutationType == 's' else [i for i in range(1,8)]
