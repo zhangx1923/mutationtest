@@ -160,7 +160,8 @@ def main():
             scheduler.step()
         test(model, device, test_loader, folder_path, "End")
     else:
-        model.load_state_dict(torch.load("mnist_cnn.pt"))
+        path = args.dataset + "_cnn.pt"
+        model.load_state_dict(torch.load(path))
         for mt in mutation_types:
             test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
 
