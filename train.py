@@ -79,6 +79,7 @@ def test_mutation(model, device, test_loader, path, epoch, mutation, tp):
     with torch.no_grad():
         print("with")
         for data, target in test_loader:
+            print(data)
             data, target = data.to(device), target.to(device)
             print("heer")
             output = model(data)
