@@ -59,8 +59,10 @@ class Net(nn.Module):
                 row, col = fea.shape
                 index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(row)]).to(fea.device)
                 tar = torch.zeros_like(fea).to(fea.device)
+                print(fea[0])
                 fea = fea.scatter(1, index, tar)
-
+                print(fea[0])
+                print("!!!!!!!!!")
         # for ins in x:
         #     for i,fea in enumerate(ins):
         #         for m in range(len(fea)):
@@ -177,10 +179,10 @@ class Net(nn.Module):
             x = self.__remove1(x, self.mutation)
         x = F.relu(x)
         x = self.conv2(x)
-        # if self.mutationType == 's':
-        #     x = self.__remove(x, self.mutation)
-        # elif self.mutationType == 'c':
-        #     x = self.__remove1(x, self.mutation)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = self.dropout1(x)
