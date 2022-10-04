@@ -60,6 +60,7 @@ class Net(nn.Module):
                 index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(row)]).to(fea.device)
                 tar = torch.zeros_like(fea).to(fea.device)
                 print(fea[0])
+                print(index)
                 fea = fea.scatter(1, index, tar)
                 print(fea[0])
                 print("!!!!!!!!!")
