@@ -55,13 +55,10 @@ class Net(nn.Module):
                 #each feature map
                 #assign tar's (i,j) value to (i,j) position of fea
                 
-                row, col = fea.shape
+                row, col = ins[i].shape
                 index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(row)]).to(fea.device)
                 tar = torch.zeros_like(fea).to(fea.device)
-                fea = fea.scatter(1, index, tar)
-                fea = tar
-                print(fea)
-                print("!!!")
+                ins[i] = ins[i].scatter(1, index, tar)
         # for ins in x:
         #     for i,fea in enumerate(ins):
         #         for m in range(len(fea)):
