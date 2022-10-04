@@ -11,6 +11,7 @@ from tools import print_msg, create_floder
 import datetime
 
 def load_data(args1, args2, dataset):
+    print(dataset)
     if dataset == "mnist":
         print(dataset)
         transform=transforms.Compose([
