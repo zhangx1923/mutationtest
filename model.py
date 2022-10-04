@@ -12,14 +12,14 @@ import torch.nn.functional as F
 
 #逐个删除神经元，生成图片
 class Net(nn.Module):
-    def __init__(self, ds):
+    def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 32, 3, 1) if ds == "mnist" else nn.Conv2d(3, 32, 3, 1)
+        self.conv1 = nn.Conv2d(1, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
         self.dropout1 = nn.Dropout(0.25)
         self.dropout2 = nn.Dropout(0.5)
         self.dropout3 = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(9216, 128) if ds == "mnist" else nn.Linear(12544, 128)
+        self.fc1 = nn.Linear(9216, 128)
         self.fc2 = nn.Linear(128, 10)
         self.mutation = 0
         self.mutationType = 0
@@ -52,44 +52,53 @@ class Net(nn.Module):
             return self.dropout3(x)
 
         for ins in x:
-            for i,fea in enumerate(ins):
+            for i,fea in enumerate(ins):    
                 #each feature map
-                for m in range(len(fea)):
-                    for n in range(len(fea[m])):
-                        if mu == 1:
-                            if (m+n) % 2 != 0:
-                                fea[m][n] = 0
-                        elif mu == 2:
-                            if (m+n) % 2 == 0:
-                                fea[m][n] = 0                           
-                        elif mu == 3:
-                            if m >= n:
-                               fea[m][n] = 0  
-                        elif mu == 4:
-                            if m < n:
-                                fea[m][n] = 0 
-                        elif mu == 5:
-                            if m <= len(fea) // 2:
-                                fea[m][n] = 0 
-                        elif mu == 6:
-                            if m > len(fea) // 2:
-                                fea[m][n] = 0 
-                        elif mu == 7:
-                            fea[m][n] = 0 
-                        elif mu == 8:
-                            pass
-                        elif mu == 9:
-                            if n >= m:
-                                fea[m][n] = 0 
-                        elif mu == 10:
-                            if n < m:
-                                fea[m][n] = 0 
-                        elif mu == 11:
-                            if n <= len(fea[m]) // 2:
-                                fea[m][n] = 0 
-                        elif mu == 12:
-                            if n > len(fea[m]) // 2:
-                                fea[m][n] = 0 
+                #assign tar's (i,j) value to (i,j) position of fea
+                
+                row, col = fea.shape
+                index = torch.tensor([[i for i in range(j%2, row, 2) ] for j in range(col)])
+                tar = torch.zeros_like(fea)
+                fea.scatter(1, index, tar)
+
+        # for ins in x:
+        #     for i,fea in enumerate(ins):
+        #         for m in range(len(fea)):
+        #             for n in range(len(fea[m])):
+        #                 if mu == 1:
+        #                     if (m+n) % 2 != 0:
+        #                         fea[m][n] = 0
+        #                 elif mu == 2:
+        #                     if (m+n) % 2 == 0:
+        #                         fea[m][n] = 0                           
+        #                 elif mu == 3:
+        #                     if m >= n:
+        #                        fea[m][n] = 0  
+        #                 elif mu == 4:
+        #                     if m < n:
+        #                         fea[m][n] = 0 
+        #                 elif mu == 5:
+        #                     if m <= len(fea) // 2:
+        #                         fea[m][n] = 0 
+        #                 elif mu == 6:
+        #                     if m > len(fea) // 2:
+        #                         fea[m][n] = 0 
+        #                 elif mu == 7:
+        #                     fea[m][n] = 0 
+        #                 elif mu == 8:
+        #                     pass
+        #                 elif mu == 9:
+        #                     if n >= m:
+        #                         fea[m][n] = 0 
+        #                 elif mu == 10:
+        #                     if n < m:
+        #                         fea[m][n] = 0 
+        #                 elif mu == 11:
+        #                     if n <= len(fea[m]) // 2:
+        #                         fea[m][n] = 0 
+        #                 elif mu == 12:
+        #                     if n > len(fea[m]) // 2:
+        #                         fea[m][n] = 0 
         return x
 
     def __remove1(self, x, mu):
