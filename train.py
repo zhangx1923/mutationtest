@@ -77,9 +77,7 @@ def test_mutation(model, device, test_loader, path, epoch, mutation, tp):
     model.setMutationType(tp)
     with torch.no_grad():
         for data, label in test_loader:
-            print(123)
             data, label = data.to(device), label.to(device)
-            print("heer")
             output = model(data)
             test_loss += F.nll_loss(output, label, reduction='sum').item()  # sum up batch loss
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability

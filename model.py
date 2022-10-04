@@ -50,7 +50,7 @@ class Net(nn.Module):
         
         if mu == 13:
             return self.dropout3(x)
-
+        return x
         # for ins in x:
         #     for i,fea in enumerate(ins):    
         #         #each feature map
@@ -60,8 +60,7 @@ class Net(nn.Module):
         #         index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(row)]).to(fea.device)
         #         tar = torch.zeros_like(fea).to(fea.device)
         #         fea = fea.scatter(1, index, tar)
-        for ind, ins in enumerate(x):
-            print(ind)
+        for ins in x:
             for i,fea in enumerate(ins):
                 for m in range(len(fea)):
                     for n in range(len(fea[m])):
