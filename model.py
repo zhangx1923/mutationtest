@@ -170,7 +170,7 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.__remove(x, self.mutation)
+        #x = self.__remove(x, self.mutation)
         # print(self.mutationType)
         # if self.mutationType == 's':
         #     print('!')
