@@ -117,39 +117,46 @@ class Net(nn.Module):
         for ins in x:
             for i,fea in enumerate(ins):
                 #each feature map
-                for m in range(len(fea)):
-                    for n in range(len(fea[m])):
-                        if mu == 1:
-                            if (m+n) % 2 != 0 and i%2 ==0:
+                if i % 2 == 0:
+                    for m in range(len(fea)):
+                        for n in range(len(fea[m])):
+                            if mu == 1:
+                                if (m+n) % 2 != 0:
+                                    fea[m][n] = 0                         
+                            elif mu == 2:
+                                if m >= n:
+                                    fea[m][n] = 0  
+                            elif mu == 3:
+                                if m <= len(fea) // 2:
+                                    fea[m][n] = 0 
+                            elif mu == 4:
                                 fea[m][n] = 0
-                            elif i%2 != 0 and (m+n) % 2 == 0:
-                                fea[m][n] = 0                          
-                        elif mu == 2:
-                            if m >= n and i%2 == 0:
-                               fea[m][n] = 0  
-                            elif m<n and i%2 != 0:
-                                fea[m][n] = 0 
-                        elif mu == 3:
-                            if m <= len(fea) // 2 and i%2 ==0:
-                                fea[m][n] = 0 
-                            elif m > len(fea) // 2 and i%2 != 0:
-                                fea[m][n] = 0 
-
-                        elif mu == 4:
-                            if i % 2 == 0:
-                                fea[m][n] = 0
-                            else:
-                                pass 
-                        elif mu == 5:
-                            if n >= m and i%2 ==0:
-                                fea[m][n] = 0 
-                            elif n < m and i%2 !=0:
-                                fea[m][n] = 0 
-                        elif mu == 6:
-                            if n <= len(fea[m]) // 2 and i%2 ==0:
-                                fea[m][n] = 0 
-                            elif n > len(fea[m]) // 2 and i%2 ==0:
-                                fea[m][n] = 0 
+                            elif mu == 5:
+                                if n >= m:
+                                    fea[m][n] = 0 
+                            elif mu == 6:
+                                if n <= len(fea[m]) // 2:
+                                    fea[m][n] = 0                 
+                else:
+                    for m in range(len(fea)):
+                        for n in range(len(fea[m])):
+                            if mu == 1:
+                                if i%2 != 0:
+                                    fea[m][n] = 0                          
+                            elif mu == 2:
+                                if m<n:
+                                    fea[m][n] = 0 
+                            elif mu == 3:
+                                if m > len(fea) // 2:
+                                    fea[m][n] = 0 
+                            elif mu == 4:
+                                pass
+                            elif mu == 5:
+                                if n < m:
+                                    fea[m][n] = 0 
+                            elif mu == 6:
+                                if n > len(fea[m]) // 2:
+                                    fea[m][n] = 0 
         return x
 
 
