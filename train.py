@@ -73,8 +73,8 @@ def test_mutation(model, device, test_loader, path, epoch, mutation, tp):
     model.eval()
     test_loss = 0
     correct = 0
-    # model.setMutation(mutation)
-    # model.setMutationType(tp)
+    model.setMutation(mutation)
+    model.setMutationType(tp)
     with torch.no_grad():
         for data, label in test_loader:
             data, label = data.to(device), label.to(device)
@@ -138,7 +138,7 @@ def main():
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
 
-    model = Net().to(device) if args.dataset == "mnist" else Net().to(device)
+    model = Net().to(device)
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
