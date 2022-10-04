@@ -51,14 +51,39 @@ class Net(nn.Module):
         if mu == 13:
             return self.dropout3(x)
         for ins in x:
-            for i,fea in enumerate(ins):    
+            for ind,fea in enumerate(ins):    
                 #each feature map
                 #assign tar's (i,j) value to (i,j) position of fea
                 
-                row, col = ins[i].shape
-                index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(row)]).to(fea.device)
+                row, col = ins[ind].shape
+                if mu == 1:
+                    index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(row)]).to(fea.device)
+                elif mu == 2:
+                    index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(1,row+1)]).to(fea.device)
+                elif mu == 3:
+                    index = torch.tensor([[i for i in range(0, row-j, 1) ] for j in range(row)]).to(fea.device)
+                elif mu == 4:
+                    index = torch.tensor([[i for i in range(col-1, row-j-1, -1) ] for j in range(row)]).to(fea.device)
+                elif mu == 5:
+                    index = torch.tensor([[i for i in range(0, col, 1) ] for j in range(row//2)]).to(fea.device)
+                elif mu == 6:
+                    index0 = torch.tensor([[] for j in range(row-row//2)]).to(fea.device)
+                    index1 = torch.tensor([[i for i in range(0, col, 1) ] for j in range(row//2)]).to(fea.device)
+                    index = torch.cat((index0, index1),0)
+                elif mu == 7:
+                    index = torch.tensor([[i for i in range(0, col, 1) ] for j in range(row)]).to(fea.device)
+                elif mu == 9:
+                    index = torch.tensor([[i for i in range(j, col, 1) ] for j in range(row)]).to(fea.device)
+                elif mu == 10:
+                    index = torch.tensor([[i for i in range(0, j, 1) ] for j in range(row)]).to(fea.device)
+                elif mu == 11:
+                    index = torch.tensor([[i for i in range(0, col//2, 1) ] for j in range(row)]).to(fea.device)
+                elif mu == 12:
+                    index = torch.tensor([[i for i in range(col//2, col, 1) ] for j in range(row)]).to(fea.device)
+                else:
+                    index = []
                 tar = torch.zeros_like(fea).to(fea.device)
-                ins[i] = ins[i].scatter(1, index, tar)
+                ins[ind] = ins[ind].scatter(1, index, tar)
         # for ins in x:
         #     for i,fea in enumerate(ins):
         #         for m in range(len(fea)):
