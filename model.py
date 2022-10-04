@@ -96,10 +96,10 @@ class Net(nn.Module):
                     index = torch.tensor([[i for i in range(col//2, col, 1) ] for j in range(row)]).to(fea.device)
                 else:
                     index = []
+                tar = torch.zeros_like(fea).to(fea.device)
                 if mu == 5 or mu == 6:
                     ins[ind][index] = tar[index]
-                else:
-                    tar = torch.zeros_like(fea).to(fea.device)
+                else: 
                     ins[ind] = ins[ind].scatter(1, index, tar)
         # for ins in x:
         #     for i,fea in enumerate(ins):
