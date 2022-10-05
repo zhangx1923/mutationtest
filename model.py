@@ -54,7 +54,6 @@ class Net(nn.Module):
             for ind,fea in enumerate(ins):    
                 #each feature map
                 #assign tar's (i,j) value to (i,j) position of fea
-                
                 row, col = ins[ind].shape
                 if mu == 1:
                     index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(row)]).to(fea.device)
@@ -101,6 +100,7 @@ class Net(nn.Module):
                     ins[ind][index] = tar[index]
                 else: 
                     ins[ind] = ins[ind].scatter(1, index, tar)
+        return x
         # for ins in x:
         #     for i,fea in enumerate(ins):
         #         for m in range(len(fea)):
@@ -139,7 +139,7 @@ class Net(nn.Module):
         #                 elif mu == 12:
         #                     if n > len(fea[m]) // 2:
         #                         fea[m][n] = 0 
-        return x
+        
 
     def __remove1(self, x, mu):
         #combine the following:
@@ -164,49 +164,104 @@ class Net(nn.Module):
             return self.dropout3(x)
         
         for ins in x:
-            for i,fea in enumerate(ins):
-                #each feature map
-                if i % 2 == 0:
-                    for m in range(len(fea)):
-                        for n in range(len(fea[m])):
-                            if mu == 1:
-                                if (m+n) % 2 != 0:
-                                    fea[m][n] = 0                         
-                            elif mu == 2:
-                                if m >= n:
-                                    fea[m][n] = 0  
-                            elif mu == 3:
-                                if m <= len(fea) // 2:
-                                    fea[m][n] = 0 
-                            elif mu == 4:
-                                fea[m][n] = 0
-                            elif mu == 5:
-                                if n >= m:
-                                    fea[m][n] = 0 
-                            elif mu == 6:
-                                if n <= len(fea[m]) // 2:
-                                    fea[m][n] = 0                 
+            for ind,fea in enumerate(ins): 
+                row, col = ins[ind].shape
+                if mu == 1:
+                    if ind % 2 == 0:
+                        index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(row)]).to(fea.device)
+                    else:
+                        index = torch.tensor([[i for i in range(j%2, col, 2) ] for j in range(1,row+1)]).to(fea.device)
+                elif mu == 2:
+                    if ind % 2 == 0:
+                        index = [[i for i in range(0, row-j, 1) ] for j in range(row)]
+                        max_len = max([len(l) for l in index])
+                        index = [l + l[-1:] * (max_len - len(l)) for l in index]
+                        index = torch.tensor(index).to(fea.device)
+                    else:
+                        index = [[i for i in range(col-1, row-j-2, -1) ] for j in range(row)]
+                        max_len = max([len(l) for l in index])
+                        index = [l + l[-1:] * (max_len - len(l)) for l in index]
+                        index = torch.tensor(index).to(fea.device)                        
+                elif mu == 3:
+                    if ind % 2 == 0:
+                        index = torch.tensor([i for i in range(0,col//2)])
+                    else:
+                        index = torch.tensor([i for i in range(col//2, col)])
+                elif mu == 4:
+                    if ind % 2 == 0:
+                        index = torch.tensor([[i for i in range(0, col, 1) ] for j in range(row)]).to(fea.device)
+                    else:
+                        continue
+                elif mu == 5:
+                    if ind % 2 == 0:
+                        index = [[i for i in range(j, col, 1) ] for j in range(row)]
+                        max_len = max([len(l) for l in index])
+                        index = [l + l[-1:] * (max_len - len(l)) for l in index]
+                        index = torch.tensor(index).to(fea.device)
+                    else:
+                        index = [[i for i in range(0, j+1, 1) ] for j in range(row)]
+                        max_len = max([len(l) for l in index])
+                        index = [l + l[-1:] * (max_len - len(l)) for l in index]
+                        index = torch.tensor(index).to(fea.device)
+                elif mu == 6:
+                    if ind % 2 == 0:
+                        index = torch.tensor([[i for i in range(0, col//2, 1) ] for j in range(row)]).to(fea.device)
+                    else:
+                        index = torch.tensor([[i for i in range(col//2, col, 1) ] for j in range(row)]).to(fea.device)
+                                tar = torch.zeros_like(fea).to(fea.device)
                 else:
-                    for m in range(len(fea)):
-                        for n in range(len(fea[m])):
-                            if mu == 1:
-                                if i%2 != 0:
-                                    fea[m][n] = 0                          
-                            elif mu == 2:
-                                if m<n:
-                                    fea[m][n] = 0 
-                            elif mu == 3:
-                                if m > len(fea) // 2:
-                                    fea[m][n] = 0 
-                            elif mu == 4:
-                                pass
-                            elif mu == 5:
-                                if n < m:
-                                    fea[m][n] = 0 
-                            elif mu == 6:
-                                if n > len(fea[m]) // 2:
-                                    fea[m][n] = 0 
+                    index = []
+                tar = torch.zeros_like(fea).to(fea.device)
+                if mu == 3:
+                    ins[ind][index] = tar[index]
+                else:
+                    ins[ind] = ins[ind].scatter(1, index, tar)
         return x
+        
+        # for ins in x:
+        #     for i,fea in enumerate(ins):
+        #         #each feature map
+        #         if i % 2 == 0:
+        #             for m in range(len(fea)):
+        #                 for n in range(len(fea[m])):
+        #                     if mu == 1:
+        #                         if (m+n) % 2 != 0:
+        #                             fea[m][n] = 0                         
+        #                     elif mu == 2:
+        #                         if m >= n:
+        #                             fea[m][n] = 0  
+        #                     elif mu == 3:
+        #                         if m <= len(fea) // 2:
+        #                             fea[m][n] = 0 
+        #                     elif mu == 4:
+        #                         fea[m][n] = 0
+        #                     elif mu == 5:
+        #                         if n >= m:
+        #                             fea[m][n] = 0 
+        #                     elif mu == 6:
+        #                         if n <= len(fea[m]) // 2:
+        #                             fea[m][n] = 0                 
+        #         else:
+        #             for m in range(len(fea)):
+        #                 for n in range(len(fea[m])):
+        #                     if mu == 1:
+        #                         if i%2 != 0:
+        #                             fea[m][n] = 0                          
+        #                     elif mu == 2:
+        #                         if m<n:
+        #                             fea[m][n] = 0 
+        #                     elif mu == 3:
+        #                         if m > len(fea) // 2:
+        #                             fea[m][n] = 0 
+        #                     elif mu == 4:
+        #                         pass
+        #                     elif mu == 5:
+        #                         if n < m:
+        #                             fea[m][n] = 0 
+        #                     elif mu == 6:
+        #                         if n > len(fea[m]) // 2:
+        #                             fea[m][n] = 0 
+        
 
 
     def forward(self, x):
