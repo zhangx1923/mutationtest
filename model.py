@@ -208,7 +208,6 @@ class Net(nn.Module):
                         index = torch.tensor([[i for i in range(0, col//2, 1) ] for j in range(row)]).to(fea.device)
                     else:
                         index = torch.tensor([[i for i in range(col//2, col, 1) ] for j in range(row)]).to(fea.device)
-                                tar = torch.zeros_like(fea).to(fea.device)
                 else:
                     index = []
                 tar = torch.zeros_like(fea).to(fea.device)
