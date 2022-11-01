@@ -209,13 +209,8 @@ class Net(nn.Module):
                 index_col = [i for i in range(start_col, start_col+block_col_count)]
                 index_row = torch.tensor(index_row)
                 index_col = torch.tensor(index_col)
-                print("before change")
-                #print(instance[ind])
                 instance[ind][index_row, index_col] = tar[index_row, index_col]
-                print(instance[ind])
-                print("after change")
-
-
+                print(block_row_count, block_col_count,start_row,start_col,instance[ind][index_row, index_col])
         return x
 
     def forward(self, x):
