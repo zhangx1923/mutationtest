@@ -212,6 +212,7 @@ class Net(nn.Module):
                 index_row = torch.tensor(index_row)
                 index_col = torch.tensor(index_col)
                 instance[ind][index_row, index_col] = tar[index_row, index_col]
+                print(row,col, index_row, index_col, instance[ind][index_row, index_col])
                 #print(block_row_count, block_col_count,start_row,start_col,instance[ind][index_row, index_col])
         return x
 
