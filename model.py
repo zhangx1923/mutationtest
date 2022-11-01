@@ -194,6 +194,8 @@ class Net(nn.Module):
     #location: from top to bottom, from left to right: 1,2,3....,n*n
     def __removeGrid__(self, x, percent, location):
         if percent < 2 or percent > 5 or location < 1 or location > percent * percent:
+            print("error")
+            exit(0)
             #execute the threshold, do nothing 
             return x
         
