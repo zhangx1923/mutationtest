@@ -6,7 +6,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 import argparse
-from model import Net
+from model import Net, Net1, Net2, Net3
 from tools import print_msg, create_floder
 import datetime
 
@@ -69,12 +69,14 @@ def test(model, device, test_loader, path, epoch):
         100. * correct / len(test_loader.dataset))
     print_msg(path+"testmsg.txt", msg)
 
-def test_mutation(model, device, test_loader, path, epoch, mutation, tp):
+def test_mutation(model, device, test_loader, path, epoch, mutation, tp, percent=3, location=1):
     model.eval()
     test_loss = 0
     correct = 0
     model.setMutation(mutation)
     model.setMutationType(tp)
+    model.setPercent(percent)
+    model.setLocation(location)
     with torch.no_grad():
         for data, label in test_loader:
             data, label = data.to(device), label.to(device)
@@ -84,12 +86,17 @@ def test_mutation(model, device, test_loader, path, epoch, mutation, tp):
             correct += pred.eq(label.view_as(pred)).sum().item()           
 
     test_loss /= len(test_loader.dataset)
-    msg = 'Mutation: {}, Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        mutation, epoch, test_loss, correct, len(test_loader.dataset),
-        100. * correct / len(test_loader.dataset))
-    fileName = "mutationtestmsg" + str(mutation) + ".txt"
+    if tp == 's' or tp == 'c':
+        msg = 'Mutation: {}, Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            mutation, epoch, test_loss, correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset))
+        fileName = "mutationtestmsg" + str(mutation) + ".txt"
+    elif tp == 'r':
+        msg = 'Remove percent: {}, Current Block Location: {}, Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            percent, location, epoch, test_loss, correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset))
+        fileName = "removetestmsg" + str(percent) + " " + str(location) + ".txt"
     print_msg(path+fileName, msg)
-
 
 
 def main():
@@ -111,10 +118,12 @@ def main():
                         help='index of gpu you want to use')
     parser.add_argument('--evaluate', type=str, default='train', choices=['train', 'eva'],
                         help='train=train, evaluate=eva') 
-    parser.add_argument('--mutationType', type=str, default='s', choices=['s', 'c'],
-                        help='s=single, one kind of mutation; c=combine, combine two kind of mutation') 
+    parser.add_argument('--mutationType', type=str, default='s', choices=['s', 'c', 'r'],
+                        help='s=single, one kind of mutation; c=combine, combine two kind of mutation; r=remove block') 
     parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'cifar'],
                         help='dataset, mnist or cifar10') 
+    parser.add_argument('--rmp', type=int, default=3,
+                        help='remove percent,2,3,4,5')
     
     args = parser.parse_args()
 
@@ -138,7 +147,7 @@ def main():
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
 
-    model = Net().to(device)
+    model = Net1().to(device)
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
@@ -159,8 +168,12 @@ def main():
                 test(model, device, test_loader, folder_path, epoch)
             scheduler.step()
         test(model, device, test_loader, folder_path, "End")
-        for mt in mutation_types:
-            test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
+        if args.mutationType == 'c' or args.mutationType == 's':
+            for mt in mutation_types:
+                test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
+        elif args.mutationType == 'r':
+            for location in range(1, int(args.rmp)*int(args.rmp)+1):
+                test_mutation(model, device, test_loader, folder_path, 'End', 0, args.mutationType, args.rmp, location)
         #save model
         sd_path = args.dataset + "_cnn.pt"
         torch.save(model.state_dict(), sd_path)

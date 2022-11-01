@@ -23,12 +23,23 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(128, 10)
         self.mutation = 0
         self.mutationType = 0
+        self.percent = 0
+        self.location = 0
 
     def setMutation(self, types):
         self.mutation = types
 
     def setMutationType(self, types):
         self.mutationType = types
+
+    def setPercent(self, p):
+        self.percent = p
+
+    def setLocation(self, l):
+        self.location = l
+
+    def __changeWeight(self, x, where, percent):
+        pass
 
     def __remove(self, x, mu):
         #1.take one from every two neurons (first row from the beginning)
@@ -71,9 +82,9 @@ class Net(nn.Module):
                     index = torch.tensor(index).to(fea.device)
                 elif mu == 5:
                     #index = torch.tensor([[i for i in range(0, col, 1) ] for j in range(row//2)]).to(fea.device)
-                    index = torch.tensor([i for i in range(0,col//2)])
+                    index = torch.tensor([i for i in range(0,row//2)])
                 elif mu == 6:
-                    index = torch.tensor([i for i in range(col//2, col)])
+                    index = torch.tensor([i for i in range(row//2, row)])
                     # index0 = torch.tensor([[] for j in range(row-row//2)]).to(fea.device)
                     # index1 = torch.tensor([[i for i in range(0, col, 1) ] for j in range(row//2)]).to(fea.device)
                     # index = torch.cat((index0, index1),0)
@@ -101,45 +112,6 @@ class Net(nn.Module):
                 else: 
                     ins[ind] = ins[ind].scatter(1, index, tar)
         return x
-        # for ins in x:
-        #     for i,fea in enumerate(ins):
-        #         for m in range(len(fea)):
-        #             for n in range(len(fea[m])):
-        #                 if mu == 1:
-        #                     if (m+n) % 2 != 0:
-        #                         fea[m][n] = 0
-        #                 elif mu == 2:
-        #                     if (m+n) % 2 == 0:
-        #                         fea[m][n] = 0                           
-        #                 elif mu == 3:
-        #                     if m >= n:
-        #                        fea[m][n] = 0  
-        #                 elif mu == 4:
-        #                     if m < n:
-        #                         fea[m][n] = 0 
-        #                 elif mu == 5:
-        #                     if m <= len(fea) // 2:
-        #                         fea[m][n] = 0 
-        #                 elif mu == 6:
-        #                     if m > len(fea) // 2:
-        #                         fea[m][n] = 0 
-        #                 elif mu == 7:
-        #                     fea[m][n] = 0 
-        #                 elif mu == 8:
-        #                     pass
-        #                 elif mu == 9:
-        #                     if n >= m:
-        #                         fea[m][n] = 0 
-        #                 elif mu == 10:
-        #                     if n < m:
-        #                         fea[m][n] = 0 
-        #                 elif mu == 11:
-        #                     if n <= len(fea[m]) // 2:
-        #                         fea[m][n] = 0 
-        #                 elif mu == 12:
-        #                     if n > len(fea[m]) // 2:
-        #                         fea[m][n] = 0 
-        
 
     def __remove1(self, x, mu):
         #combine the following:
@@ -184,9 +156,9 @@ class Net(nn.Module):
                         index = torch.tensor(index).to(fea.device)                        
                 elif mu == 3:
                     if ind % 2 == 0:
-                        index = torch.tensor([i for i in range(0,col//2)])
+                        index = torch.tensor([i for i in range(0,row//2)])
                     else:
-                        index = torch.tensor([i for i in range(col//2, col)])
+                        index = torch.tensor([i for i in range(row//2, row)])
                 elif mu == 4:
                     if ind % 2 == 0:
                         index = torch.tensor([[i for i in range(0, col, 1) ] for j in range(row)]).to(fea.device)
@@ -216,57 +188,128 @@ class Net(nn.Module):
                 else:
                     ins[ind] = ins[ind].scatter(1, index, tar)
         return x
+
+    #n-palace grid remove experiments
+    #percent: 3---3*3 grid, n ---- n*n grid. [2,5]
+    #location: from top to bottom, from left to right: 1,2,3....,n*n
+    def __removeGrid__(self, x, percent, location):
+        if percent < 2 or percent > 5 or location < 1 or location > percent * percent:
+            #execute the threshold, do nothing 
+            return x
         
-        # for ins in x:
-        #     for i,fea in enumerate(ins):
-        #         #each feature map
-        #         if i % 2 == 0:
-        #             for m in range(len(fea)):
-        #                 for n in range(len(fea[m])):
-        #                     if mu == 1:
-        #                         if (m+n) % 2 != 0:
-        #                             fea[m][n] = 0                         
-        #                     elif mu == 2:
-        #                         if m >= n:
-        #                             fea[m][n] = 0  
-        #                     elif mu == 3:
-        #                         if m <= len(fea) // 2:
-        #                             fea[m][n] = 0 
-        #                     elif mu == 4:
-        #                         fea[m][n] = 0
-        #                     elif mu == 5:
-        #                         if n >= m:
-        #                             fea[m][n] = 0 
-        #                     elif mu == 6:
-        #                         if n <= len(fea[m]) // 2:
-        #                             fea[m][n] = 0                 
-        #         else:
-        #             for m in range(len(fea)):
-        #                 for n in range(len(fea[m])):
-        #                     if mu == 1:
-        #                         if i%2 != 0:
-        #                             fea[m][n] = 0                          
-        #                     elif mu == 2:
-        #                         if m<n:
-        #                             fea[m][n] = 0 
-        #                     elif mu == 3:
-        #                         if m > len(fea) // 2:
-        #                             fea[m][n] = 0 
-        #                     elif mu == 4:
-        #                         pass
-        #                     elif mu == 5:
-        #                         if n < m:
-        #                             fea[m][n] = 0 
-        #                     elif mu == 6:
-        #                         if n > len(fea[m]) // 2:
-        #                             fea[m][n] = 0 
-        
+        for instance in x:
+            for ind, fea in enumerate(instance):
+                row, col = instance[ind].shape
+                block_row_count, block_col_count = row//percent, col//percent
+                remove_block_row_start, remove_block_col_start = location//percent, location%percent-1
+                start_row = block_row_count * remove_block_row_start
+                start_col = block_col_count * remove_block_col_start
+                tar = torch.zeros_like(fea).to(fea.device)
+                index_row = [i for i in range(start_row, start_row+block_row_count)]
+                index_col = [i for i in range(start_col, start_col+block_col_count)]
+                index_row = torch.tensor(index_row)
+                index_col = torch.tensor(index_col)
+                print("before change")
+                print(instance[ind])
+                instance[ind][index_row, index_col] = tar[index_row, index_col]
+                print(instance[ind])
+                print("after change")
+
+
+        return x
+
+    def forward(self, x):
+        x = self.conv1(x)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        elif self.mutationType == 'r':
+            x = self.__removeGrid__(x, self.percent, self.location)
+        x = F.relu(x)
+        x = self.conv2(x)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        elif self.mutationType == 'r':
+            x = self.__removeGrid__(x, self.percent, self.location)
+        x = F.relu(x)
+        x = F.max_pool2d(x, 2)
+        x = self.dropout1(x)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.dropout2(x)
+        x = self.fc2(x)
+        output = F.log_softmax(x, dim=1)
+        return output
+
+
+
+#inherit
+
+#for mnist model 1
+class Net1(Net):
+    def __init__(self, ):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 6, 5, 1)
+        self.conv2 = nn.Conv2d(6, 16, 5, 1)
+        self.fc1 = nn.Linear(256, 120)
+        self.fc2 = nn.Linear(120, 84)
+        self.fc3 = nn.Linear(84, 10)
+        self.mutation = 0
+        self.mutationType = 0
+        self.percent = 0
+        self.location = 0
+    
 
 
     def forward(self, x):
         x = self.conv1(x)
-        #x = self.__remove(x, self.mutation)
-        # print(self.mutationType)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        elif self.mutationType == 'r':
+            x = self.__removeGrid__(x, self.percent, self.location)
+        x = F.relu(x)
+        x = F.max_pool2d(x, 2)
+        x = self.conv2(x)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        elif self.mutationType == 'r':
+            x = self.__removeGrid__(x, self.percent, self.location)
+        x = F.relu(x)
+        x = F.max_pool2d(x, 2)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.fc2(x)
+        x = F.relu(x)
+        x = self.fc3(x)
+        output = F.log_softmax(x, dim=1)
+        return output
+
+
+
+#for mnist model 2
+class Net2(Net):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, 3, 1)
+        self.conv2 = nn.Conv2d(32, 32, 3, 1)
+        self.conv3 = nn.Conv2d(32, 64, 3)
+        self.conv4 = nn.Conv2d(64, 64, 3)
+        self.fc1 = nn.Linear(1024, 200)
+        self.fc2 = nn.Linear(200, 10)
+        self.mutation = 0
+        self.mutationType = 0
+    
+    def forward(self, x):
+        x = self.conv1(x)
         if self.mutationType == 's':
             x = self.__remove(x, self.mutation)
         elif self.mutationType == 'c':
@@ -279,11 +322,73 @@ class Net(nn.Module):
             x = self.__remove1(x, self.mutation)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
-        x = self.dropout1(x)
+        x = self.conv3(x)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        x = F.relu(x)
+        x = self.conv4(x)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        x = F.relu(x)
+        x = F.max_pool2d(x, 2)
         x = torch.flatten(x, 1)
         x = self.fc1(x)
         x = F.relu(x)
-        x = self.dropout2(x)
         x = self.fc2(x)
         output = F.log_softmax(x, dim=1)
+        return output
+
+
+
+#for cifar
+class Net3(Net):
+    def __init__(self):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(1, 64, 3, 1)
+        self.conv2 = nn.Conv2d(64, 64, 3, 1)
+        self.conv3 = nn.Conv2d(64, 128, 3)
+        self.conv4 = nn.Conv2d(128, 128, 3)
+        self.fc1 = nn.Linear(3200, 256)
+        self.fc2 = nn.Linear(256, 256)
+        self.fc3 = nn.Linear(256, 10)
+        self.mutation = 0
+        self.mutationType = 0
+    
+    def forward(self, x):
+        x = self.conv1(x)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        x = F.relu(x)
+        x = self.conv2(x)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        x = F.relu(x)
+        x = F.max_pool2d(x, 2)
+        x = self.conv3(x)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        x = F.relu(x)
+        x = self.conv4(x)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        x = F.relu(x)
+        x = F.max_pool2d(x, 2)
+        x = torch.flatten(x, 1)
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.fc2(x)
+        x = F.relu(x)
+        output = self.fc3(x)
         return output
