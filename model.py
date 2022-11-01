@@ -208,12 +208,13 @@ class Net(nn.Module):
                 start_col = block_col_count * remove_block_col_start
                 tar = torch.zeros_like(fea).to(fea.device)
                 index_row = [i for i in range(start_row, start_row+block_row_count)]
-                index_col = [i for i in range(start_col, start_col+block_col_count)]
+                #index_col = [i for i in range(start_col, start_col+block_col_count)]
+                index_col = [i for i in range(0, col-2)]
                 index_row = torch.tensor(index_row)
                 index_col = torch.tensor(index_col)
                 instance[ind][index_row, index_col] = tar[index_row, index_col]
-                instance[ind][index_row] = tar[index_row]
-                print(row,col, index_row, index_col, instance[ind][index_row, index_col])
+                #instance[ind][index_row] = tar[index_row]
+                #print(row,col, index_row, index_col, instance[ind][index_row, index_col])
                 #print(block_row_count, block_col_count,start_row,start_col,instance[ind][index_row, index_col])
         return x
 
