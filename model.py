@@ -210,7 +210,7 @@ class Net(nn.Module):
                 index_row = torch.tensor(index_row)
                 index_col = torch.tensor(index_col)
                 print("before change")
-                print(instance[ind])
+                #print(instance[ind])
                 instance[ind][index_row, index_col] = tar[index_row, index_col]
                 print(instance[ind])
                 print("after change")
