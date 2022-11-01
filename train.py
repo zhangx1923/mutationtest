@@ -172,7 +172,7 @@ def main():
             for mt in mutation_types:
                 test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
         elif args.mutationType == 'r':
-            for location in range(1, int(args.rmp)*int(args.rmp)+1):
+            for location in range(0, int(args.rmp)*int(args.rmp)):
                 test_mutation(model, device, test_loader, folder_path, 'End', 0, args.mutationType, args.rmp, location)
         #save model
         sd_path = args.dataset + "_cnn.pt"

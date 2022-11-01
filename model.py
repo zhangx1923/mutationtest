@@ -191,9 +191,9 @@ class Net(nn.Module):
 
     #n-palace grid remove experiments
     #percent: 3---3*3 grid, n ---- n*n grid. [2,5]
-    #location: from top to bottom, from left to right: 1,2,3....,n*n
+    #location: from top to bottom, from left to right: 0,2,3....,n*n-1
     def __removeGrid__(self, x, percent, location):
-        if percent < 2 or percent > 5 or location < 1 or location > percent * percent:
+        if percent < 2 or percent > 5 or location < 0 or location > percent * percent-1:
             print("error")
             exit(0)
             #execute the threshold, do nothing 
@@ -203,7 +203,7 @@ class Net(nn.Module):
             for ind, fea in enumerate(instance):
                 row, col = instance[ind].shape
                 block_row_count, block_col_count = row//percent, col//percent
-                remove_block_row_start, remove_block_col_start = location//percent, location%percent-1
+                remove_block_row_start, remove_block_col_start = location//percent, location%percent
                 start_row = block_row_count * remove_block_row_start
                 start_col = block_col_count * remove_block_col_start
                 tar = torch.zeros_like(fea).to(fea.device)
