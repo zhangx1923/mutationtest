@@ -206,22 +206,26 @@ class Net(nn.Module):
                 remove_block_row_start, remove_block_col_start = location//percent, location%percent
                 start_row = block_row_count * remove_block_row_start
                 start_col = block_col_count * remove_block_col_start
-                tar = torch.zeros_like(fea).to(fea.device)
-                index_row = [i for i in range(start_row, start_row+block_row_count)]
-                index_col = [i for i in range(start_col, start_col+block_col_count)]
+                #tar = torch.zeros_like(fea).to(fea.device)
+                index_row = [i for i in range(start_row, start_row+block_row_count+1)]
+                index_col = [i for i in range(start_col, start_col+block_col_count+1)]
                 #index_col = [i for i in range(0, col-2)]
                 # index = torch.tensor([[i for i in range(start_row, start_row+block_row_count) ] for j in range(start_col, start_col+block_col_count)]).to(fea.device)
                 # instance[ind] = instance[ind].scatter(1, index, tar)
                 # index_row = torch.tensor(index_row)
                 # index_col = torch.tensor(index_col)
-                instance[ind][index_row, index_col] = -1000
+                instance[ind][index_row, index_col] = 0
                 #print(instance[ind][index_row, index_col])
                 #instance[ind][index_row] = tar[index_row]
                 #print(row,col, index_row, index_col, instance[ind][index_row, index_col])
                 #print(block_row_count, block_col_count,start_row,start_col,instance[ind][index_row, index_col])
-        for ins in x:
-            for ind,fea in enumerate(ins):
-                print(instance[ind][index_row, index_col])
+        for instance in x:
+            print("   ")
+            for ind, fea in enumerate(instance):
+                for j in fea:
+                    
+                    print(j)
+            print("      ")
         return x
 
     def forward(self, x):
