@@ -198,7 +198,7 @@ class Net(nn.Module):
             exit(0)
             #execute the threshold, do nothing 
             return x
-        
+        index_row, index_col = [], []
         for instance in x:
             for ind, fea in enumerate(instance):
                 row, col = instance[ind].shape
@@ -215,10 +215,13 @@ class Net(nn.Module):
                 # index_row = torch.tensor(index_row)
                 # index_col = torch.tensor(index_col)
                 instance[ind][index_row, index_col] = -1000
-                print(instance[ind][index_row, index_col])
+                #print(instance[ind][index_row, index_col])
                 #instance[ind][index_row] = tar[index_row]
                 #print(row,col, index_row, index_col, instance[ind][index_row, index_col])
                 #print(block_row_count, block_col_count,start_row,start_col,instance[ind][index_row, index_col])
+        for ins in x:
+            for ind,fea in enumerate(ins):
+                print(instance[ind][index_row, index_col])
         return x
 
     def forward(self, x):
