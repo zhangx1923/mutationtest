@@ -214,7 +214,7 @@ class Net(nn.Module):
                 # instance[ind] = instance[ind].scatter(1, index, tar)
                 # index_row = torch.tensor(index_row)
                 # index_col = torch.tensor(index_col)
-                print(instance[ind][index_row, index_col])
+                print(index_row, index_col)
                 instance[ind][index_row, index_col] = 0
                 print(instance[ind][index_row, index_col])
                 print("!!!!!!!!!!!!!!!!!!!!!!!")
