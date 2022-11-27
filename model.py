@@ -215,8 +215,8 @@ class Net(nn.Module):
                 # index_row = torch.tensor(index_row)
                 # index_col = torch.tensor(index_col)
                 print(index_row, index_col)
-                instance[ind][index_row, index_col] = 0
-                print(instance[ind][index_row, index_col])
+                instance[ind][index_row] = 0
+                print(instance[ind][index_row])
                 print("!!!!!!!!!!!!!!!!!!!!!!!")
                 print("\r\n\r\n")
                 #instance[ind][index_row] = tar[index_row]
@@ -232,31 +232,7 @@ class Net(nn.Module):
         return x
 
     def forward(self, x):
-        x = self.conv1(x)
-        if self.mutationType == 's':
-            x = self.__remove(x, self.mutation)
-        elif self.mutationType == 'c':
-            x = self.__remove1(x, self.mutation)
-        elif self.mutationType == 'r':
-            x = self.__removeGrid__(x, self.percent, self.location)
-        x = F.relu(x)
-        x = self.conv2(x)
-        if self.mutationType == 's':
-            x = self.__remove(x, self.mutation)
-        elif self.mutationType == 'c':
-            x = self.__remove1(x, self.mutation)
-        elif self.mutationType == 'r':
-            x = self.__removeGrid__(x, self.percent, self.location)
-        x = F.relu(x)
-        x = F.max_pool2d(x, 2)
-        x = self.dropout1(x)
-        x = torch.flatten(x, 1)
-        x = self.fc1(x)
-        x = F.relu(x)
-        x = self.dropout2(x)
-        x = self.fc2(x)
-        output = F.log_softmax(x, dim=1)
-        return output
+        pass
 
 
 
