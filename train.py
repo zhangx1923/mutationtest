@@ -16,6 +16,12 @@ def load_data(args1, args2, dataset):
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
             ])
+        transform_pad=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,)),
+            transforms.Pad([16,16,0,0])#left,top,right,bot
+            ])
+        
         dataset1 = datasets.MNIST('../data', train=True, download=True,
                         transform=transform)
         dataset2 = datasets.MNIST('../data', train=False,

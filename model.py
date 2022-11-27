@@ -214,8 +214,11 @@ class Net(nn.Module):
                 # instance[ind] = instance[ind].scatter(1, index, tar)
                 # index_row = torch.tensor(index_row)
                 # index_col = torch.tensor(index_col)
+                print(instance[ind][index_row, index_col])
                 instance[ind][index_row, index_col] = 0
-                #print(instance[ind][index_row, index_col])
+                print(instance[ind][index_row, index_col])
+                print("!!!!!!!!!!!!!!!!!!!!!!!")
+                print("\r\n\r\n")
                 #instance[ind][index_row] = tar[index_row]
                 #print(row,col, index_row, index_col, instance[ind][index_row, index_col])
                 #print(block_row_count, block_col_count,start_row,start_col,instance[ind][index_row, index_col])
@@ -286,12 +289,12 @@ class Net1(Net):
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = self.conv2(x)
-        if self.mutationType == 's':
-            x = self.__remove(x, self.mutation)
-        elif self.mutationType == 'c':
-            x = self.__remove1(x, self.mutation)
-        elif self.mutationType == 'r':
-            x = self.__removeGrid__(x, self.percent, self.location)
+        # if self.mutationType == 's':
+        #     x = self.__remove(x, self.mutation)
+        # elif self.mutationType == 'c':
+        #     x = self.__remove1(x, self.mutation)
+        # elif self.mutationType == 'r':
+        #     x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = torch.flatten(x, 1)
