@@ -220,9 +220,9 @@ class Net(nn.Module):
                 # print(start_row, start_col,start_row+block_row_count+1 ,start_col+block_col_count+1)
                 instance[ind] = instance[ind].scatter(1, torch.tensor(index).to(fea.device), tar)
                 # print(index)
-                print(instance[ind], start_row, start_col,start_row+block_row_count+1 ,start_col+block_col_count+1)
-                print("!!!!!!!!!!!!!!!!!!!!!!!")
-                print("\r\n\r\n")
+                # print(instance[ind], start_row, start_col,start_row+block_row_count+1 ,start_col+block_col_count+1)
+                # print("!!!!!!!!!!!!!!!!!!!!!!!")
+                # print("\r\n\r\n")
                 #instance[ind][index_row] = tar[index_row]
                 #print(row,col, index_row, index_col, instance[ind][index_row, index_col])
                 #print(block_row_count, block_col_count,start_row,start_col,instance[ind][index_row, index_col])
