@@ -198,8 +198,6 @@ class Net(nn.Module):
             print("error")
             exit(0)
             #execute the threshold, do nothing 
-            return x
-        index_row, index_col = [], []
         for instance in x:
             for ind, fea in enumerate(instance):
                 row, col = instance[ind].shape

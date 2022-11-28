@@ -180,7 +180,7 @@ def main():
         elif args.mutationType == 'r':
             for location in range(0, int(args.rmp)*int(args.rmp)):
                 print(location)
-                #test_mutation(model, device, test_loader, folder_path, 'End', 0, args.mutationType, args.rmp, location)
+                test_mutation(model, device, test_loader, folder_path, 'End', 0, args.mutationType, args.rmp, location)
         #save model
         sd_path = args.dataset + "_cnn.pt"
         torch.save(model.state_dict(), sd_path)
