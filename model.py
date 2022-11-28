@@ -218,7 +218,7 @@ class Net(nn.Module):
                 # index_col = torch.tensor(index_col)
                 print(index)
                 print(start_row, start_col,start_row+block_row_count+1 ,start_col+block_col_count+1)
-                instance[ind] = instance[ind].scatter(1, index, tar)
+                instance[ind] = instance[ind].scatter(1, torch.tensor(index).to(fea.device), tar)
                 print(index)
                 print(instance[ind], start_row, start_col,start_row+block_row_count+1 ,start_col+block_col_count+1)
                 print("!!!!!!!!!!!!!!!!!!!!!!!")
