@@ -207,8 +207,8 @@ class Net(nn.Module):
                 start_col = block_col_count * remove_block_col_start
                 tar = torch.zeros_like(fea).to(fea.device)
 
-                index = [[i if j >= start_row else 0 for i in range(start_col, start_col+block_col_count+1)] for j in range(0, start_row+block_row_count)]
-                print(index, fea.shape, start_col, block_col_count, start_row, block_row_count)
+                index = [[i if j >= start_row else 0 for i in range(start_col, start_col+block_col_count)] for j in range(0, start_row+block_row_count)]
+                #print(index, fea.shape, start_col, block_col_count, start_row, block_row_count)
                 #index_col = [i for i in range(0, col-2)]
                 # index = torch.tensor([[i for i in range(start_row, start_row+block_row_count) ] for j in range(start_col, start_col+block_col_count)]).to(fea.device)
                 # instance[ind] = instance[ind].scatter(1, index, tar)
