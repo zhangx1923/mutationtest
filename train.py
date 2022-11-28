@@ -70,9 +70,9 @@ def test(model, device, test_loader, path, epoch):
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
-    msg = 'Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    msg = 'Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%), Total Correct: {}, Total Case: {}\n'.format(
         epoch, test_loss, correct, len(test_loader.dataset),
-        100. * correct / len(test_loader.dataset))
+        100. * correct / len(test_loader.dataset), correct, len(test_loader.dataset))
     print_msg(path+"testmsg.txt", msg)
 
 def test_mutation(model, device, test_loader, path, epoch, mutation, tp, percent=3, location=1):
@@ -93,14 +93,14 @@ def test_mutation(model, device, test_loader, path, epoch, mutation, tp, percent
 
     test_loss /= len(test_loader.dataset)
     if tp == 's' or tp == 'c':
-        msg = 'Mutation: {}, Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+        msg = 'Mutation: {}, Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%), Total Correct: {}, Total Case: {}\n'.format(
             mutation, epoch, test_loss, correct, len(test_loader.dataset),
-            100. * correct / len(test_loader.dataset))
+            100. * correct / len(test_loader.dataset), correct, len(test_loader.dataset))
         fileName = "mutationtestmsg" + str(mutation) + ".txt"
     elif tp == 'r':
-        msg = 'Remove percent: {}, Current Block Location: {}, Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+        msg = 'Remove percent: {}, Current Block Location: {}, Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%), Total Correct: {}, Total Case: {}\n'.format(
             percent, location, epoch, test_loss, correct, len(test_loader.dataset),
-            100. * correct / len(test_loader.dataset))
+            100. * correct / len(test_loader.dataset), correct, len(test_loader.dataset))
         fileName = "removetestmsg" + str(percent) + " " + str(location) + ".txt"
     print_msg(path+fileName, msg)
 
@@ -179,7 +179,8 @@ def main():
                 test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
         elif args.mutationType == 'r':
             for location in range(0, int(args.rmp)*int(args.rmp)):
-                test_mutation(model, device, test_loader, folder_path, 'End', 0, args.mutationType, args.rmp, location)
+                print(location)
+                #test_mutation(model, device, test_loader, folder_path, 'End', 0, args.mutationType, args.rmp, location)
         #save model
         sd_path = args.dataset + "_cnn.pt"
         torch.save(model.state_dict(), sd_path)
