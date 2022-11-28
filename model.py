@@ -216,7 +216,7 @@ class Net(nn.Module):
                 # instance[ind] = instance[ind].scatter(1, index, tar)
                 # index_row = torch.tensor(index_row)
                 # index_col = torch.tensor(index_col)
-                
+                print(index)
                 instance[ind] = instance[ind].scatter(1, index, tar)
                 print(index)
                 print(instance[ind], start_row, start_col,start_row+block_row_count+1 ,start_col+block_col_count+1)
