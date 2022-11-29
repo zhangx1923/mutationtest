@@ -14,6 +14,7 @@ orig_img = Image.open('1.png')
 # if you change the seed, make sure that the randomly-applied transforms
 # properly show that the image can be both transformed and *not* transformed!
 torch.manual_seed(0)
+print(orig_img.size)
 
 
 def plot(imgs, with_orig=True, row_title=None, **imshow_kwargs):
@@ -58,5 +59,6 @@ def padf(size=100):
     return block_diff
 bd = padf()
 print(bd)
+bd = [[0,0,90,90]]
 padded_imgs = [T.Pad(padding=padding)(orig_img) for padding in bd]
 plot(padded_imgs)
