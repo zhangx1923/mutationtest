@@ -57,5 +57,6 @@ def padf(size=100):
             block_diff.append([left,top,right,bot])
     return block_diff
 bd = padf()
+print(bd)
 padded_imgs = [T.Pad(padding=padding)(orig_img) for padding in bd]
 plot(padded_imgs)
