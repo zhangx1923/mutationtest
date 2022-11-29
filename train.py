@@ -16,12 +16,6 @@ def load_data(args1, args2, dataset):
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,))
             ])
-        transform_pad=transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,)),
-            transforms.Pad([16,16,0,0])#left,top,right,bot
-            ])
-        
         dataset1 = datasets.MNIST('../data', train=True, download=True,
                         transform=transform)
         dataset2 = datasets.MNIST('../data', train=False,
@@ -31,7 +25,7 @@ def load_data(args1, args2, dataset):
     elif dataset == 'cifar':
         transform=transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize((0.5,0.5,0.5), (0.5,0.5,0.5))
+            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
             ])        
         dataset1 = datasets.CIFAR10('../data', train=True, download=True,
                         transform=transform)
@@ -42,6 +36,40 @@ def load_data(args1, args2, dataset):
     else:
         train_data_loader = test_data_loader = None
     return train_data_loader, test_data_loader
+
+#mnist 28*28
+#cifar 32*32
+def load_data_after_pad(args1, args2, dataset, percent, location):
+    size = 28 if dataset == 'mnist' else 32
+    block_size = size // percent
+    #location 0 -- percent*percent-1
+    target_block_row = location//percent
+    target_block_col = location%percent
+    left = target_block_col * block_size
+    right = (percent-target_block_col-1) * block_size
+    top = target_block_row * block_size
+    bot = (percent-target_block_row-1) * block_size
+
+    if dataset == "mnist":
+        transform_pad=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,)),
+            transforms.Pad([left,top,right,bot])#left,top,right,bot
+            ])
+        ds = datasets.MNIST('../data', train=False,
+                        transform=transform_pad)
+    elif dataset == "cifar":
+        transform_pad=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
+            transforms.Pad([left,top,right,bot])#left,top,right,bot
+            ])  
+        ds = datasets.CIFAR10('../data', train=False,
+                        transform=transform_pad)
+    else:
+        ds = None
+    return torch.utils.data.DataLoader(ds,**args2)
+
 
 def train(args, model, device, train_loader, optimizer, epoch, path):
     model.train()
@@ -57,7 +85,8 @@ def train(args, model, device, train_loader, optimizer, epoch, path):
             100. * batch_idx / len(train_loader), loss.item())
         print_msg(path+"trainmsg.txt", msg)
 
-def test(model, device, test_loader, path, epoch):
+#parameter test_pad decide whether this function is used for normal test or test_pad
+def test(model, device, test_loader, path, epoch, test_pad = False, percent = 0, location = 0):
     model.eval()
     test_loss = 0
     correct = 0
@@ -70,9 +99,15 @@ def test(model, device, test_loader, path, epoch):
             correct += pred.eq(target.view_as(pred)).sum().item()
 
     test_loss /= len(test_loader.dataset)
-    msg = 'Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%), Total Correct: {}, Total Case: {}\n'.format(
-        epoch, test_loss, correct, len(test_loader.dataset),
-        100. * correct / len(test_loader.dataset), correct, len(test_loader.dataset))
+
+    if test_pad == False:
+        msg = 'Test Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%), Total Correct: {}, Total Case: {}\n'.format(
+            epoch, test_loss, correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset), correct, len(test_loader.dataset))
+    else:
+        msg = 'Test_pad Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%), Total Correct: {}, Total Case: {}, split_percent: {}, cur_location: {}\n'.format(
+            epoch, test_loss, correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset), correct, len(test_loader.dataset), percent, location)
     print_msg(path+"testmsg.txt", msg)
 
 def test_mutation(model, device, test_loader, path, epoch, mutation, tp, percent=3, location=1):
@@ -130,6 +165,9 @@ def main():
                         help='dataset, mnist or cifar10') 
     parser.add_argument('--rmp', type=int, default=3,
                         help='remove percent,2,3,4,5')
+    parser.add_argument('--model', type=int, default=1,
+                        help='1 or 2 for mnist, 3 for cifar')
+                        
     
     args = parser.parse_args()
 
@@ -153,7 +191,16 @@ def main():
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
 
-    model = Net1().to(device)
+    if args.model == 1 and args.dataset == 'mnist':
+        model = Net1().to(device)
+    elif args.model == 2 and args.dataset == 'mnist':
+        model = Net2().to(device)
+    elif args.model == 3 and args.dataset == 'cifar':
+        model = Net3().to(device)
+    else:
+        print_msg("Wrong parameter! Only support model = 1 or 2 for dataset mnist and model = 3 for cifar!")
+        exit(0)
+
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
@@ -163,7 +210,7 @@ def main():
 
     mutation_types = [i for i in range(1, 14)] if args.mutationType == 's' else [i for i in range(1,8)]
 
-    print("begin to "+ str(args.evaluate))
+    print_msg("begin to "+ str(args.evaluate))
 
     if args.evaluate == 'train':
         #train + test
@@ -173,12 +220,21 @@ def main():
             if epoch % 2 == 0:
                 test(model, device, test_loader, folder_path, epoch)
             scheduler.step()
+
+        #original version of test_loader
         test(model, device, test_loader, folder_path, "End")
+        
+        #pad test dataset for different block
+        if args.mutationType == 'r':
+            for location in range(0, int(args.rmp) * int(args.rmp)):
+                test_loader_pad = load_data_after_pad(train_kwargs, test_kwargs, args.dataset, args.rmp, location)
+                test(model, device, test_loader_pad, folder_path, "End", True, args.rmp, location)
+        
         if args.mutationType == 'c' or args.mutationType == 's':
             for mt in mutation_types:
                 test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
         elif args.mutationType == 'r':
-            for location in range(0, int(args.rmp)*int(args.rmp)):
+            for location in range(0, int(args.rmp) * int(args.rmp)):
                 #print(location)
                 test_mutation(model, device, test_loader, folder_path, 'End', 0, args.mutationType, args.rmp, location)
         #save model
