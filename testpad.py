@@ -43,7 +43,7 @@ def plot(imgs, with_orig=True, row_title=None, **imshow_kwargs):
 
 def padf(size=100):
     block_diff = []
-    for percent in range(2,4):
+    for percent in range(3,4):
         for location in range(0, percent ** 2):
             block_size = size // percent
             #location 0 -- percent*percent-1

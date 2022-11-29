@@ -168,6 +168,8 @@ def main():
     parser.add_argument('--model', type=int, default=1,
                         help='1 or 2 for mnist, 3 for cifar')
                         
+    parser.add_argument('--padtest', type=int, default=0,
+                        help='0 not pad test, 1 for pad test')
     
     args = parser.parse_args()
 
@@ -224,11 +226,12 @@ def main():
         #original version of test_loader
         test(model, device, test_loader, folder_path, "End")
         
-        #pad test dataset for different block
-        if args.mutationType == 'r':
-            for location in range(0, int(args.rmp) * int(args.rmp)):
-                test_loader_pad = load_data_after_pad(train_kwargs, test_kwargs, args.dataset, args.rmp, location)
-                test(model, device, test_loader_pad, folder_path, "End", True, args.rmp, location)
+        if args.padtest == 1:
+            #pad test dataset for different block
+            if args.mutationType == 'r':
+                for location in range(0, int(args.rmp) * int(args.rmp)):
+                    test_loader_pad = load_data_after_pad(train_kwargs, test_kwargs, args.dataset, args.rmp, location)
+                    test(model, device, test_loader_pad, folder_path, "End", True, args.rmp, location)
         
         if args.mutationType == 'c' or args.mutationType == 's':
             for mt in mutation_types:
