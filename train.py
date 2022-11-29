@@ -41,7 +41,7 @@ def load_data(args1, args2, dataset):
 #cifar 32*32
 def load_data_after_pad(args1, args2, dataset, percent, location):
     size = 28 if dataset == 'mnist' else 32
-    block_size = size // percent
+    block_size = size
     #location 0 -- percent*percent-1
     target_block_row = location//percent
     target_block_col = location%percent
@@ -54,7 +54,8 @@ def load_data_after_pad(args1, args2, dataset, percent, location):
         transform_pad=transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.1307,), (0.3081,)),
-            transforms.Pad([left,top,right,bot])#left,top,right,bot
+            transforms.Pad([left,top,right,bot]),#left,top,right,bot
+            transforms.Resize(28)
             ])
         ds = datasets.MNIST('../data', train=False,
                         transform=transform_pad)
@@ -62,7 +63,8 @@ def load_data_after_pad(args1, args2, dataset, percent, location):
         transform_pad=transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
-            transforms.Pad([left,top,right,bot])#left,top,right,bot
+            transforms.Pad([left,top,right,bot]),#left,top,right,bot
+            transforms.Resize(32)
             ])  
         ds = datasets.CIFAR10('../data', train=False,
                         transform=transform_pad)

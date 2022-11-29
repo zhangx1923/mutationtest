@@ -59,6 +59,7 @@ def padf(size=100):
 bd = padf()
 print(bd)
 padded_imgs = [T.Pad(padding=padding)(orig_img) for padding in bd]
+padded_imgs = [T.Resize(100)(img) for img in padded_imgs]
 for x in padded_imgs:
     print(x.size)
 plot(padded_imgs)
