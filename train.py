@@ -202,7 +202,7 @@ def main():
     elif args.model == 3 and args.dataset == 'cifar':
         model = Net3().to(device)
     else:
-        print_msg("Wrong parameter! Only support model = 1 or 2 for dataset mnist and model = 3 for cifar!")
+        print("Wrong parameter! Only support model = 1 or 2 for dataset mnist and model = 3 for cifar!")
         exit(0)
 
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
@@ -214,7 +214,7 @@ def main():
 
     mutation_types = [i for i in range(1, 14)] if args.mutationType == 's' else [i for i in range(1,8)]
 
-    print_msg("begin to "+ str(args.evaluate))
+    print("begin to "+ str(args.evaluate))
 
     if args.evaluate == 'train':
         #train + test
