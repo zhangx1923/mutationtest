@@ -45,7 +45,7 @@ def padf(size=100):
     block_diff = []
     for percent in range(3,4):
         for location in range(0, percent ** 2):
-            block_size = size // percent
+            block_size = size
             #location 0 -- percent*percent-1
             target_block_row = location//percent
             target_block_col = location%percent
@@ -58,7 +58,6 @@ def padf(size=100):
     return block_diff
 bd = padf()
 print(bd)
-bd = [[0,0,90,90]]
 padded_imgs = [T.Pad(padding=padding)(orig_img) for padding in bd]
 for x in padded_imgs:
     print(x.size)
