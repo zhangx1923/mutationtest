@@ -22,7 +22,7 @@ def plot(imgs, with_orig=True, row_title=None, **imshow_kwargs):
         # Make a 2d grid even if there's just 1 row
         imgs = [imgs]
     for i in imgs:
-        print(i.size)
+        print(len(i),len(i[0]))
     num_rows = len(imgs)
     num_cols = len(imgs[0]) + with_orig
     fig, axs = plt.subplots(nrows=num_rows, ncols=num_cols, squeeze=False)
