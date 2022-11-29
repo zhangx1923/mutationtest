@@ -298,6 +298,8 @@ class Net2(Net):
         self.fc2 = nn.Linear(200, 10)
         self.mutation = 0
         self.mutationType = 0
+        self.percent = 0
+        self.location = 0
     
     def forward(self, x):
         x = self.conv1(x)
@@ -305,25 +307,33 @@ class Net2(Net):
             x = self.__remove(x, self.mutation)
         elif self.mutationType == 'c':
             x = self.__remove1(x, self.mutation)
+        elif self.mutationType == 'r':
+            x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = self.conv2(x)
-        if self.mutationType == 's':
-            x = self.__remove(x, self.mutation)
-        elif self.mutationType == 'c':
-            x = self.__remove1(x, self.mutation)
+        # if self.mutationType == 's':
+        #     x = self.__remove(x, self.mutation)
+        # elif self.mutationType == 'c':
+        #     x = self.__remove1(x, self.mutation)
+        # elif self.mutationType == 'r':
+        #     x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = self.conv3(x)
-        if self.mutationType == 's':
-            x = self.__remove(x, self.mutation)
-        elif self.mutationType == 'c':
-            x = self.__remove1(x, self.mutation)
+        # if self.mutationType == 's':
+        #     x = self.__remove(x, self.mutation)
+        # elif self.mutationType == 'c':
+        #     x = self.__remove1(x, self.mutation)
+        # elif self.mutationType == 'r':
+        #     x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = self.conv4(x)
-        if self.mutationType == 's':
-            x = self.__remove(x, self.mutation)
-        elif self.mutationType == 'c':
-            x = self.__remove1(x, self.mutation)
+        # if self.mutationType == 's':
+        #     x = self.__remove(x, self.mutation)
+        # elif self.mutationType == 'c':
+        #     x = self.__remove1(x, self.mutation)
+        # elif self.mutationType == 'r':
+        #     x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = torch.flatten(x, 1)
@@ -348,6 +358,8 @@ class Net3(Net):
         self.fc3 = nn.Linear(256, 10)
         self.mutation = 0
         self.mutationType = 0
+        self.percent = 0
+        self.location = 0
     
     def forward(self, x):
         x = self.conv1(x)
@@ -355,25 +367,33 @@ class Net3(Net):
             x = self.__remove(x, self.mutation)
         elif self.mutationType == 'c':
             x = self.__remove1(x, self.mutation)
+        elif self.mutationType == 'r':
+            x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = self.conv2(x)
-        if self.mutationType == 's':
-            x = self.__remove(x, self.mutation)
-        elif self.mutationType == 'c':
-            x = self.__remove1(x, self.mutation)
+        # if self.mutationType == 's':
+        #     x = self.__remove(x, self.mutation)
+        # elif self.mutationType == 'c':
+        #     x = self.__remove1(x, self.mutation)
+        # elif self.mutationType == 'r':
+        #     x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = self.conv3(x)
-        if self.mutationType == 's':
-            x = self.__remove(x, self.mutation)
-        elif self.mutationType == 'c':
-            x = self.__remove1(x, self.mutation)
+        # if self.mutationType == 's':
+        #     x = self.__remove(x, self.mutation)
+        # elif self.mutationType == 'c':
+        #     x = self.__remove1(x, self.mutation)
+        # elif self.mutationType == 'r':
+        #     x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = self.conv4(x)
-        if self.mutationType == 's':
-            x = self.__remove(x, self.mutation)
-        elif self.mutationType == 'c':
-            x = self.__remove1(x, self.mutation)
+        # if self.mutationType == 's':
+        #     x = self.__remove(x, self.mutation)
+        # elif self.mutationType == 'c':
+        #     x = self.__remove1(x, self.mutation)
+        # elif self.mutationType == 'r':
+        #     x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = torch.flatten(x, 1)
