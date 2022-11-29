@@ -25,7 +25,7 @@ def load_data(args1, args2, dataset):
     elif dataset == 'cifar':
         transform=transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
+            #transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
             ])        
         dataset1 = datasets.CIFAR10('../data', train=True, download=True,
                         transform=transform)
