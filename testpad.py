@@ -21,8 +21,6 @@ def plot(imgs, with_orig=True, row_title=None, **imshow_kwargs):
     if not isinstance(imgs[0], list):
         # Make a 2d grid even if there's just 1 row
         imgs = [imgs]
-    for i in imgs:
-        print(len(i),len(i[0]))
     num_rows = len(imgs)
     num_cols = len(imgs[0]) + with_orig
     fig, axs = plt.subplots(nrows=num_rows, ncols=num_cols, squeeze=False)
@@ -62,4 +60,6 @@ bd = padf()
 print(bd)
 bd = [[0,0,90,90]]
 padded_imgs = [T.Pad(padding=padding)(orig_img) for padding in bd]
+for x in padded_imgs:
+    print(x.size)
 plot(padded_imgs)
