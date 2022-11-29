@@ -339,7 +339,7 @@ class Net2(Net):
 class Net3(Net):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(1, 64, 3, 1)
+        self.conv1 = nn.Conv2d(3, 64, 3, 1)
         self.conv2 = nn.Conv2d(64, 64, 3, 1)
         self.conv3 = nn.Conv2d(64, 128, 3)
         self.conv4 = nn.Conv2d(128, 128, 3)
