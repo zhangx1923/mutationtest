@@ -39,9 +39,14 @@ def load_data(args1, args2, dataset):
 
 #mnist 28*28
 #cifar 32*32
+
+#this static variable to reduce blank area, avoid the suqare of feature is too tiny to recoginze
+#set to 1: no reduce, full pad method
+reduceFactor = 4
+
 def load_data_after_pad(args1, args2, dataset, percent, location):
     size = 28 if dataset == 'mnist' else 32
-    block_size = size
+    block_size = size // reduceFactor
     #location 0 -- percent*percent-1
     target_block_row = location//percent
     target_block_col = location%percent
@@ -71,7 +76,7 @@ def load_data_after_pad(args1, args2, dataset, percent, location):
     else:
         ds = None
     return torch.utils.data.DataLoader(ds,**args2)
-
+ 
 
 def train(args, model, device, train_loader, optimizer, epoch, path):
     model.train()
