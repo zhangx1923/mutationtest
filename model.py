@@ -257,6 +257,9 @@ class Net1(Net):
 
 
     def forward(self, x):
+        print(x)
+        print("!!!!")
+        print("\r\n\r\n")
         x = self.conv1(x)
         if self.mutationType == 's':
             x = self.__remove(x, self.mutation)
