@@ -42,7 +42,7 @@ def load_data(args1, args2, dataset):
 
 #this static variable to reduce blank area, avoid the suqare of feature is too tiny to recoginze
 #set to 1: no reduce, full pad method
-reduceFactor = 4
+reduceFactor = 2
 
 def load_data_after_pad(args1, args2, dataset, percent, location):
     size = 28 if dataset == 'mnist' else 32
