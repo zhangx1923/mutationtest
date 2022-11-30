@@ -52,6 +52,7 @@ def load_data_after_pad(args1, args2, dataset, percent, location):
 
     if dataset == "mnist":
         print(left,top,right,bot)
+        exit(0)
         transform_pad=transforms.Compose([
             transforms.ToTensor(),
             #transforms.Normalize((0.1307,), (0.3081,)),
