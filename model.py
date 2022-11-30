@@ -257,6 +257,9 @@ class Net1(Net):
 
 
     def forward(self, x):
+        for ins in x:
+            for ind, fea in enumerate(ins):
+                print(fea)
         x = self.conv1(x)
         if self.mutationType == 's':
             x = self.__remove(x, self.mutation)

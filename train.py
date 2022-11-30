@@ -14,7 +14,9 @@ def load_data(args1, args2, dataset):
     if dataset == "mnist":
         transform=transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,))
+            transforms.Pad(padding=[left,top,right,bot], fill=0),
+            transforms.Normalize((0.1307,), (0.3081,)),
+            transforms.Resize(28)
             ])
         dataset1 = datasets.MNIST('../data', train=True, download=True,
                         transform=transform)
