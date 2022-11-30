@@ -51,11 +51,12 @@ def load_data_after_pad(args1, args2, dataset, percent, location):
     bot = (percent-target_block_row-1) * block_size
 
     if dataset == "mnist":
+        print(left,top,right,bot)
         transform_pad=transforms.Compose([
             transforms.ToTensor(),
             #transforms.Normalize((0.1307,), (0.3081,)),
             transforms.Pad(padding=[left,top,right,bot], fill=0),#left,top,right,bot
-            #transforms.Resize(28)
+            transforms.Resize(4)
             ])
         ds = datasets.MNIST('../data', train=False,
                         transform=transform_pad)
