@@ -26,7 +26,7 @@ def load_data(args1, args2, dataset):
         transform=transforms.Compose([
             transforms.ToTensor(),
             transforms.Pad(padding=[left,top,right,bot], fill=0),
-            transforms.Normalize((0.1307,), (0.3081,)),
+            #transforms.Normalize((0.1307,), (0.3081,)),
             transforms.Resize(28)
             ])
         dataset1 = datasets.MNIST('../data', train=True, download=True,
