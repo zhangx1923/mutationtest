@@ -11,23 +11,10 @@ from tools import print_msg, create_floder
 import datetime
 
 def load_data(args1, args2, dataset):
-    percent = 2
-    location = 0
-    size = 28 if dataset == 'mnist' else 32
-    block_size = size
-    #location 0 -- percent*percent-1
-    target_block_row = location//percent
-    target_block_col = location%percent
-    left = target_block_col * block_size
-    right = (percent-target_block_col-1) * block_size
-    top = target_block_row * block_size
-    bot = (percent-target_block_row-1) * block_size
     if dataset == "mnist":
         transform=transforms.Compose([
             transforms.ToTensor(),
-            transforms.Pad(padding=[left,top,right,bot], fill=0),
-            #transforms.Normalize((0.1307,), (0.3081,)),
-            transforms.Resize(28)
+            transforms.Normalize((0.1307,), (0.3081,)),
             ])
         dataset1 = datasets.MNIST('../data', train=True, download=True,
                         transform=transform)
@@ -67,7 +54,7 @@ def load_data_after_pad(args1, args2, dataset, percent, location):
         transform_pad=transforms.Compose([
             transforms.ToTensor(),
             transforms.Pad(padding=[left,top,right,bot], fill=0),#left,top,right,bot
-            transforms.Normalize((0.1307,), (0.3081,)),
+            #transforms.Normalize((0.1307,), (0.3081,)),
             transforms.Resize(28)
             ])
         ds = datasets.MNIST('../data', train=False,
