@@ -11,6 +11,17 @@ from tools import print_msg, create_floder
 import datetime
 
 def load_data(args1, args2, dataset):
+    percent = 2
+    location = 0
+    size = 28 if dataset == 'mnist' else 32
+    block_size = size
+    #location 0 -- percent*percent-1
+    target_block_row = location//percent
+    target_block_col = location%percent
+    left = target_block_col * block_size
+    right = (percent-target_block_col-1) * block_size
+    top = target_block_row * block_size
+    bot = (percent-target_block_row-1) * block_size
     if dataset == "mnist":
         transform=transforms.Compose([
             transforms.ToTensor(),
