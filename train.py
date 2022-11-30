@@ -54,8 +54,8 @@ def load_data_after_pad(args1, args2, dataset, percent, location):
         transform_pad=transforms.Compose([
             transforms.ToTensor(),
             #transforms.Normalize((0.1307,), (0.3081,)),
-            transforms.Pad([left,top,right,bot]),#left,top,right,bot
-            transforms.Resize(28)
+            transforms.Pad(padding=[left,top,right,bot], fill=0),#left,top,right,bot
+            #transforms.Resize(28)
             ])
         ds = datasets.MNIST('../data', train=False,
                         transform=transform_pad)
