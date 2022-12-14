@@ -374,29 +374,29 @@ class Net3(Net):
             x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = self.conv2(x)
-        # if self.mutationType == 's':
-        #     x = self.__remove(x, self.mutation)
-        # elif self.mutationType == 'c':
-        #     x = self.__remove1(x, self.mutation)
-        # elif self.mutationType == 'r':
-        #     x = self.__removeGrid__(x, self.percent, self.location)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        elif self.mutationType == 'r':
+            x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = self.conv3(x)
-        # if self.mutationType == 's':
-        #     x = self.__remove(x, self.mutation)
-        # elif self.mutationType == 'c':
-        #     x = self.__remove1(x, self.mutation)
-        # elif self.mutationType == 'r':
-        #     x = self.__removeGrid__(x, self.percent, self.location)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        elif self.mutationType == 'r':
+            x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = self.conv4(x)
-        # if self.mutationType == 's':
-        #     x = self.__remove(x, self.mutation)
-        # elif self.mutationType == 'c':
-        #     x = self.__remove1(x, self.mutation)
-        # elif self.mutationType == 'r':
-        #     x = self.__removeGrid__(x, self.percent, self.location)
+        if self.mutationType == 's':
+            x = self.__remove(x, self.mutation)
+        elif self.mutationType == 'c':
+            x = self.__remove1(x, self.mutation)
+        elif self.mutationType == 'r':
+            x = self.__removeGrid__(x, self.percent, self.location)
         x = F.relu(x)
         x = F.max_pool2d(x, 2)
         x = torch.flatten(x, 1)
