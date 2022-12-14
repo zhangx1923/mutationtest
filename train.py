@@ -10,12 +10,19 @@ from model import Net, Net1, Net2, Net3
 from tools import print_msg, create_floder
 import datetime
 
-def load_data(args1, args2, dataset):
+def load_data(args1, args2, dataset, status):
     if dataset == "mnist":
-        transform=transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,)),
-            ])
+        if status == 0:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize((0.1307,), (0.3081,)),
+                ])
+        elif status == 5:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.RandomPerspective(distortion_scale=0.6, p=1.0),
+                transforms.Normalize((0.1307,), (0.3081,)),
+                ])
         dataset1 = datasets.MNIST('../data', train=True, download=True,
                         transform=transform)
         dataset2 = datasets.MNIST('../data', train=False,
@@ -23,10 +30,36 @@ def load_data(args1, args2, dataset):
         train_data_loader = torch.utils.data.DataLoader(dataset1,**args1)
         test_data_loader = torch.utils.data.DataLoader(dataset2,**args2)
     elif dataset == 'cifar':
-        transform=transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
-            ])        
+        if status == 0:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
+                ])    
+        elif status == 1:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
+                ])      
+        elif status == 2:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.RandomVerticalFlip(p=0.5),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
+                ])  
+        elif status == 3:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.RandomRotation(degrees=(0, 180)),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
+                ])
+        elif status == 4:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.RandomVerticalFlip(p=0.5),
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
+                ])
         dataset1 = datasets.CIFAR10('../data', train=True, download=True,
                         transform=transform)
         dataset2 = datasets.CIFAR10('../data', train=False,
@@ -40,11 +73,10 @@ def load_data(args1, args2, dataset):
 #mnist 28*28
 #cifar 32*32
 
-#this static variable to reduce blank area, avoid the suqare of feature is too tiny to recoginze
-#set to 1: no reduce, full pad method
-reduceFactor = 2
 
-def load_data_after_pad(args1, args2, dataset, percent, location):
+#reduceFactor is used to reduce blank area, avoid the suqare of feature is too tiny to recoginze
+#set to 1: no reduce, full pad method
+def load_data_after_pad(args1, args2, dataset, percent, location, reduceFactor):
     size = 28 if dataset == 'mnist' else 32
     block_size = size // reduceFactor
     #location 0 -- percent*percent-1
@@ -93,7 +125,7 @@ def train(args, model, device, train_loader, optimizer, epoch, path):
         print_msg(path+"trainmsg.txt", msg)
 
 #parameter test_pad decide whether this function is used for normal test or test_pad
-def test(model, device, test_loader, path, epoch, test_pad = False, percent = 0, location = 0):
+def test(model, device, test_loader, path, epoch, test_pad = False, percent = 0, location = 0, reduceFactor = 1):
     model.eval()
     test_loss = 0
     correct = 0
@@ -112,9 +144,9 @@ def test(model, device, test_loader, path, epoch, test_pad = False, percent = 0,
             epoch, test_loss, correct, len(test_loader.dataset),
             100. * correct / len(test_loader.dataset), correct, len(test_loader.dataset))
     else:
-        msg = 'Test_pad Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%), Total Correct: {}, Total Case: {}, split_percent: {}, cur_location: {}\n'.format(
+        msg = 'Test_pad Epoch: {}, Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%), Total Correct: {}, Total Case: {}, split_percent: {}, cur_location: {}, reduce_factor: {}\n'.format(
             epoch, test_loss, correct, len(test_loader.dataset),
-            100. * correct / len(test_loader.dataset), correct, len(test_loader.dataset), percent, location)
+            100. * correct / len(test_loader.dataset), correct, len(test_loader.dataset), percent, location, reduceFactor)
     print_msg(path+"testmsg.txt", msg)
 
 def test_mutation(model, device, test_loader, path, epoch, mutation, tp, percent=3, location=1):
@@ -177,6 +209,14 @@ def main():
                         
     parser.add_argument('--padtest', type=int, default=0,
                         help='0 not pad test, 1 for pad test')
+
+    parser.add_argument('--aug', type=int, default=0,
+                        help='0 donot use data augment to solve; 1 random horizatal flip for cifar; \
+                        2 random vertical for cifar; 3 random rotation for cifar; 4 combine h-flip with v-flip for cifar;\
+                        5 random perceptive for mnist')
+
+    parser.add_argument('--wei', type=int, default=0,
+                        help='0 donot use weight adjust to solve; 1 or other int use')
     
     args = parser.parse_args()
 
@@ -215,7 +255,7 @@ def main():
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
 
     #load data
-    train_loader, test_loader = load_data(train_kwargs, test_kwargs, args.dataset)
+    train_loader, test_loader = load_data(train_kwargs, test_kwargs, args.dataset, args.aug)
 
     mutation_types = [i for i in range(1, 14)] if args.mutationType == 's' else [i for i in range(1,8)]
 
@@ -233,12 +273,14 @@ def main():
         #original version of test_loader
         test(model, device, test_loader, folder_path, "End")
         
+        
         if args.padtest == 1:
-            #pad test dataset for different block
-            if args.mutationType == 'r':
-                for location in range(0, int(args.rmp) * int(args.rmp)):
-                    test_loader_pad = load_data_after_pad(train_kwargs, test_kwargs, args.dataset, args.rmp, location)
-                    test(model, device, test_loader_pad, folder_path, "End", True, args.rmp, location)
+            for reduceFactor in range(1,6):
+                #pad test dataset for different block
+                if args.mutationType == 'r':
+                    for location in range(0, int(args.rmp) * int(args.rmp)):
+                        test_loader_pad = load_data_after_pad(train_kwargs, test_kwargs, args.dataset, args.rmp, location, reduceFactor)
+                        test(model, device, test_loader_pad, folder_path, "End", True, args.rmp, location, reduceFactor)
         
         if args.mutationType == 'c' or args.mutationType == 's':
             for mt in mutation_types:
