@@ -90,8 +90,9 @@ def load_data_after_pad(args1, args2, dataset, percent, location, reduceFactor):
     if dataset == "mnist":
         transform_pad=transforms.Compose([
             transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,)),
             transforms.Pad(padding=[left,top,right,bot], fill=0),#left,top,right,bot
-            #transforms.Normalize((0.1307,), (0.3081,)),
+            
             transforms.Resize(28)
             ])
         ds = datasets.MNIST('../data', train=False,
@@ -198,8 +199,8 @@ def main():
                         help='index of gpu you want to use')
     parser.add_argument('--evaluate', type=str, default='train', choices=['train', 'eva'],
                         help='train=train, evaluate=eva') 
-    parser.add_argument('--mutationType', type=str, default='s', choices=['s', 'c', 'r'],
-                        help='s=single, one kind of mutation; c=combine, combine two kind of mutation; r=remove block') 
+    parser.add_argument('--mutationType', type=str, default='s', choices=['s', 'c', 'r', 'n'],
+                        help='s=single, one kind of mutation; c=combine, combine two kind of mutation; r=remove block; n=none mutation test') 
     parser.add_argument('--dataset', type=str, default='mnist', choices=['mnist', 'cifar'],
                         help='dataset, mnist or cifar10') 
     parser.add_argument('--rmp', type=int, default=3,
