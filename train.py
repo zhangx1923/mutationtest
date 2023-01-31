@@ -20,14 +20,14 @@ def randomTranslateMnist(i):
     right = random.randint(-28-left,0)
     top = random.randint(-28,0)
     bot = random.randint(-28-top,0)
-    return F.crop(i, left = left, top = top, height = 28+(-1)*top+(-1)*bot, width = 28+(-1)*left+(-1)*right)
+    return transforms.functional.crop(i, left = left, top = top, height = 28+(-1)*top+(-1)*bot, width = 28+(-1)*left+(-1)*right)
 #generate a random translate on Cifar dataset
 def randomTranslateCifar(i):
     left = random.randint(-32,0) #cifar size 32*32
     right = random.randint(-32-left,0)
     top = random.randint(-32,0)
     bot = random.randint(-32-top,0)
-    return F.crop(i, left = left, top = top, height = 32+(-1)*top+(-1)*bot, width = 32+(-1)*left+(-1)*right)
+    return transforms.functional.crop(i, left = left, top = top, height = 32+(-1)*top+(-1)*bot, width = 32+(-1)*left+(-1)*right)
 
 
 def load_data(args1, args2, dataset, status):
