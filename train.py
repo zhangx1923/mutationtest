@@ -20,14 +20,16 @@ def randomTranslateMnist(i):
     right = random.randint(-28-left,0)
     top = random.randint(-28,0)
     bot = random.randint(-28-top,0)
-    return transforms.functional.crop(i, left = left, top = top, height = 28+(-1)*top+(-1)*bot, width = 28+(-1)*left+(-1)*right)
+    res = transforms.functional.crop(i, left = left, top = top, height = 28+(-1)*top+(-1)*bot, width = 28+(-1)*left+(-1)*right)
+    return transforms.functional.resize(res, 28)
 #generate a random translate on Cifar dataset
 def randomTranslateCifar(i):
     left = random.randint(-32,0) #cifar size 32*32
     right = random.randint(-32-left,0)
     top = random.randint(-32,0)
     bot = random.randint(-32-top,0)
-    return transforms.functional.crop(i, left = left, top = top, height = 32+(-1)*top+(-1)*bot, width = 32+(-1)*left+(-1)*right)
+    res = transforms.functional.crop(i, left = left, top = top, height = 32+(-1)*top+(-1)*bot, width = 32+(-1)*left+(-1)*right)
+    return transforms.functional.resize(res, 32)
 
 
 def load_data(args1, args2, dataset, status):
@@ -53,8 +55,8 @@ def load_data(args1, args2, dataset, status):
             transform=transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Normalize((0.1307,), (0.3081,)),
-                transforms.Lambda(randomTranslateMnist),
-                transforms.Resize(28)
+                transforms.Lambda(randomTranslateMnist)
+                #transforms.Resize(28)
             ])
         dataset1 = datasets.MNIST('../data', train=True, download=True,
                         transform=transform)
@@ -104,8 +106,8 @@ def load_data(args1, args2, dataset, status):
             transform=transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
-                transforms.Lambda(randomTranslateCifar),
-                transforms.Resize(32)
+                transforms.Lambda(randomTranslateCifar)
+                #transforms.Resize(32)
             ])
         dataset1 = datasets.CIFAR10('../data', train=True, download=True,
                         transform=transform)
