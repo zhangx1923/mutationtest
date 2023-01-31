@@ -4,6 +4,7 @@ from random import choices
 from turtle import left, right
 import torch
 import torch.nn as nn
+import random
 import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
@@ -12,6 +13,22 @@ import argparse
 from model import Net, Net1, Net2, Net3
 from tools import print_msg, create_floder
 import datetime
+
+#generate a random translate on Mnist dataset
+def randomTranslateMnist(i):
+    left = random.randint(-28,0) #mnist size 28*28
+    right = random.randint(-28-left,0)
+    top = random.randint(-28,0)
+    bot = random.randint(-28-top,0)
+    return F.crop(i, left = left, top = top, height = 28+(-1)*top+(-1)*bot, width = 28+(-1)*left+(-1)*right)
+#generate a random translate on Cifar dataset
+def randomTranslateCifar(i):
+    left = random.randint(-32,0) #cifar size 32*32
+    right = random.randint(-32-left,0)
+    top = random.randint(-32,0)
+    bot = random.randint(-32-top,0)
+    return F.crop(i, left = left, top = top, height = 32+(-1)*top+(-1)*bot, width = 32+(-1)*left+(-1)*right)
+
 
 def load_data(args1, args2, dataset, status):
     if dataset == "mnist":
@@ -23,15 +40,22 @@ def load_data(args1, args2, dataset, status):
         elif status == 5:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.RandomPerspective(distortion_scale=0.5, p=0.5),
                 transforms.Normalize((0.1307,), (0.3081,)),
+                transforms.RandomPerspective(distortion_scale=0.5, p=0.5)
                 ])
         elif status == 6:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.RandomAffine(degrees=0, translate=(0.5,0.5), scale=(0.6,0.65)),
                 transforms.Normalize((0.1307,), (0.3081,)),
+                transforms.RandomAffine(degrees=0, translate=(0.5,0.5), scale=(0.6,0.65))
                 ])
+        elif status == 7:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize((0.1307,), (0.3081,)),
+                transforms.Lambda(randomTranslateMnist),
+                transforms.Resize(28)
+            ])
         dataset1 = datasets.MNIST('../data', train=True, download=True,
                         transform=transform)
         dataset2 = datasets.MNIST('../data', train=False,
@@ -47,33 +71,40 @@ def load_data(args1, args2, dataset, status):
         elif status == 1:
             transform=transforms.Compose([
                 transforms.ToTensor(),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
                 transforms.RandomHorizontalFlip(p=0.5),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
                 ])      
         elif status == 2:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.RandomVerticalFlip(p=0.5),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
+                transforms.RandomVerticalFlip(p=0.5)
                 ])  
         elif status == 3:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.RandomRotation(degrees=(0, 180)),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
+                transforms.RandomRotation(degrees=(0, 180))
                 ])
         elif status == 4:
             transform=transforms.Compose([
                 transforms.ToTensor(),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
                 transforms.RandomVerticalFlip(p=0.5),
                 transforms.RandomHorizontalFlip(p=0.5),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
                 ])
         elif status == 6:
             transform=transforms.Compose([
                 transforms.ToTensor(),
                 transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
                 transforms.RandomAffine(degrees=0, translate=(0.5,0.5), scale=(0.6,0.65)),
+                transforms.Resize(32)
+            ])
+        elif status == 7:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
+                transforms.Lambda(randomTranslateCifar),
                 transforms.Resize(32)
             ])
         dataset1 = datasets.CIFAR10('../data', train=True, download=True,

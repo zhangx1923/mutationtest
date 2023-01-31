@@ -60,12 +60,17 @@ def padf(size=100):
 bd = padf()
 print(bd)
 #padded_imgs = [T.Pad(padding=padding)(orig_img) for padding in bd]
+def crop_my_image(image):
+    """Crop the images so only a specific region of interest is shown to my PyTorch model"""
+    left=-30
+    return T.functional.crop(image, left=left, top=0, height=200, width=200)
 
-
-padded_imgs = [T.RandomAffine(degrees=0, translate=(.1,.3), scale=(1.0,1.0))(orig_img)]
+padded_imgs = [T.Lambda(crop_my_image)(orig_img)]
+# padded_imgs = [T.RandomCrop(size=150, padding=50)(orig_img)]
 
 for x in padded_imgs:
     print(x.size)
+
 
 
 padded_imgs = [T.Resize(100)(img) for img in padded_imgs]
