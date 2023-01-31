@@ -43,22 +43,31 @@ def plot(imgs, with_orig=True, row_title=None, **imshow_kwargs):
 
 def padf(size=100):
     block_diff = []
-    for percent in range(3,4):
-        for location in range(0, percent ** 2):
-            block_size = size
-            #location 0 -- percent*percent-1
-            target_block_row = location//percent
-            target_block_col = location%percent
-            left = target_block_col * block_size
-            right = (percent-target_block_col-1) * block_size
-            top = target_block_row * block_size
-            bot = (percent-target_block_row-1) * block_size
+    block_diff = [[100,0,0,0]]
+    # for percent in range(3,4):
+    #     for location in range(0, percent ** 2):
+    #         block_size = size
+    #         #location 0 -- percent*percent-1
+    #         target_block_row = location//percent
+    #         target_block_col = location%percent
+    #         left = target_block_col * block_size
+    #         right = (percent-target_block_col-1) * block_size
+    #         top = target_block_row * block_size
+    #         bot = (percent-target_block_row-1) * block_size
 
-            block_diff.append([left,top,right,bot])
+    #         block_diff.append([left,top,right,bot])
     return block_diff
 bd = padf()
 print(bd)
-padded_imgs = [T.Pad(padding=padding)(orig_img) for padding in bd]
+#padded_imgs = [T.Pad(padding=padding)(orig_img) for padding in bd]
+
+
+padded_imgs = [T.RandomAffine(degrees=0, translate=(.1,.3), scale=(1.0,1.0))(orig_img)]
+
+for x in padded_imgs:
+    print(x.size)
+
+
 padded_imgs = [T.Resize(100)(img) for img in padded_imgs]
 for x in padded_imgs:
     print(x.size)

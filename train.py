@@ -1,4 +1,7 @@
+from curses.panel import top_panel
+from gettext import translation
 from random import choices
+from turtle import left, right
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -20,7 +23,13 @@ def load_data(args1, args2, dataset, status):
         elif status == 5:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.RandomPerspective(distortion_scale=0.6, p=1.0),
+                transforms.RandomPerspective(distortion_scale=0.5, p=0.5),
+                transforms.Normalize((0.1307,), (0.3081,)),
+                ])
+        elif status == 6:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.RandomAffine(degrees=0, translate=(0.5,0.5), scale=(0.6,0.65)),
                 transforms.Normalize((0.1307,), (0.3081,)),
                 ])
         dataset1 = datasets.MNIST('../data', train=True, download=True,
@@ -60,6 +69,13 @@ def load_data(args1, args2, dataset, status):
                 transforms.RandomHorizontalFlip(p=0.5),
                 transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
                 ])
+        elif status == 6:
+            transform=transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
+                transforms.RandomAffine(degrees=0, translate=(0.5,0.5), scale=(0.6,0.65)),
+                transforms.Resize(32)
+            ])
         dataset1 = datasets.CIFAR10('../data', train=True, download=True,
                         transform=transform)
         dataset2 = datasets.CIFAR10('../data', train=False,
