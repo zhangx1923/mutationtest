@@ -45,20 +45,20 @@ def load_data(args1, args2, dataset, status):
         elif status == 5:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.1307,), (0.3081,)),
-                transforms.RandomPerspective(distortion_scale=0.5, p=0.5)
+                transforms.RandomPerspective(distortion_scale=0.5, p=0.5),
+                transforms.Normalize((0.1307,), (0.3081,))
                 ])
         elif status == 6:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.1307,), (0.3081,)),
-                transforms.RandomAffine(degrees=0, translate=(0.5,0.5), scale=(0.6,0.65))
+                transforms.RandomAffine(degrees=0, translate=(0.5,0.5), scale=(0.6,0.65)),
+                transforms.Normalize((0.1307,), (0.3081,))
                 ])
         elif status == 7:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.1307,), (0.3081,)),
-                transforms.Lambda(randomTranslateMnist)
+                transforms.Lambda(randomTranslateMnist),
+                transforms.Normalize((0.1307,), (0.3081,))
                 #transforms.Resize(28)
             ])
         dataset1 = datasets.MNIST('../data', train=True, download=True,
@@ -76,41 +76,40 @@ def load_data(args1, args2, dataset, status):
         elif status == 1:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
                 transforms.RandomHorizontalFlip(p=0.5),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
                 ])      
         elif status == 2:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
-                transforms.RandomVerticalFlip(p=0.5)
+                transforms.RandomVerticalFlip(p=0.5),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
                 ])  
         elif status == 3:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
-                transforms.RandomRotation(degrees=(0, 180))
+                transforms.RandomRotation(degrees=(0, 180)),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
                 ])
         elif status == 4:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
                 transforms.RandomVerticalFlip(p=0.5),
                 transforms.RandomHorizontalFlip(p=0.5),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
                 ])
         elif status == 6:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
                 transforms.RandomAffine(degrees=0, translate=(0.5,0.5), scale=(0.6,0.65)),
-                transforms.Resize(32)
+                transforms.Resize(32),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
             ])
         elif status == 7:
             transform=transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
-                transforms.Lambda(randomTranslateCifar)
-                #transforms.Resize(32)
+                transforms.Lambda(randomTranslateCifar),
+                transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
             ])
         dataset1 = datasets.CIFAR10('../data', train=True, download=True,
                         transform=transform)
@@ -142,19 +141,18 @@ def load_data_after_pad(args1, args2, dataset, percent, location, reduceFactor):
     if dataset == "mnist":
         transform_pad=transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,)),
             transforms.Pad(padding=[left,top,right,bot], fill=0),#left,top,right,bot
-            
-            transforms.Resize(28)
+            transforms.Resize(28),
+            transforms.Normalize((0.1307,), (0.3081,))
             ])
         ds = datasets.MNIST('../data', train=False,
                         transform=transform_pad)
     elif dataset == "cifar":
         transform_pad=transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261)),
             transforms.Pad([left,top,right,bot]),#left,top,right,bot
-            transforms.Resize(32)
+            transforms.Resize(32),
+            transforms.Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
             ])  
         ds = datasets.CIFAR10('../data', train=False,
                         transform=transform_pad)
