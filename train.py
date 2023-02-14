@@ -25,7 +25,7 @@ def randomTranslateMnist(i):
         #res = transforms.functional.crop(i, left = left, top = top, height = 28+(-1)*top+(-1)*bot, width = 28+(-1)*left+(-1)*right)
         res = transforms.functional.crop(i, left = left, top = top, height = desireSize, width = desireSize)
         return transforms.functional.resize(res, 28)
-    return None
+    return transforms.ToTensor()
 #generate a random translate on Cifar dataset
 def randomTranslateCifar(i):
     if random.random() < 0.5:
@@ -36,7 +36,7 @@ def randomTranslateCifar(i):
         #bot = random.randint(-32-top,0)
         res = transforms.functional.crop(i, left = left, top = top, height = desireSize, width = desireSize)
         return transforms.functional.resize(res, 32)
-    return None
+    return transforms.ToTensor()
 
 
 def load_data(args1, args2, dataset, status):
