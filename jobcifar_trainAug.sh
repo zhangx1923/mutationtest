@@ -20,7 +20,7 @@
 # python train.py --batch-size 32 --test-batch-size 5000 --epochs 10 --lr 0.25 --gamma 0.7 --device cuda --gpu 7 --evaluate train --dataset cifar --model 3 --mutationType r --rmp 5 --padtest 1 --aug 4| tee cifar5_trainAug4.txt
 
 
-python train.py --batch-size 32 --test-batch-size 5000 --epochs 10 --lr 0.25 --gamma 0.7 --device cuda --gpu 7 --evaluate train --dataset cifar --model 3 --mutationType r --rmp 2 --padtest 1 --aug 7| tee cifar2_trainAug7.txt
-python train.py --batch-size 32 --test-batch-size 5000 --epochs 10 --lr 0.25 --gamma 0.7 --device cuda --gpu 7 --evaluate train --dataset cifar --model 3 --mutationType r --rmp 3 --padtest 1 --aug 7| tee cifar3_trainAug7.txt
-python train.py --batch-size 32 --test-batch-size 5000 --epochs 10 --lr 0.25 --gamma 0.7 --device cuda --gpu 7 --evaluate train --dataset cifar --model 3 --mutationType r --rmp 4 --padtest 1 --aug 7| tee cifar4_trainAug7.txt
-python train.py --batch-size 32 --test-batch-size 5000 --epochs 10 --lr 0.25 --gamma 0.7 --device cuda --gpu 7 --evaluate train --dataset cifar --model 3 --mutationType r --rmp 5 --padtest 1 --aug 7| tee cifar5_trainAug7.txt
+python train.py --batch-size 32 --test-batch-size 5000 --epochs 10 --lr 0.25 --gamma 0.7 --device cuda --gpu 7 --evaluate train --dataset cifar --model 3 --mutationType r --rmp 3 --padtest 1 --aug 7| tee cifar2_trainAugNew7.txt
+# python train.py --batch-size 32 --test-batch-size 5000 --epochs 10 --lr 0.25 --gamma 0.7 --device cuda --gpu 7 --evaluate train --dataset cifar --model 3 --mutationType r --rmp 3 --padtest 1 --aug 7| tee cifar3_trainAug7.txt
+# python train.py --batch-size 32 --test-batch-size 5000 --epochs 10 --lr 0.25 --gamma 0.7 --device cuda --gpu 7 --evaluate train --dataset cifar --model 3 --mutationType r --rmp 4 --padtest 1 --aug 7| tee cifar4_trainAug7.txt
+# python train.py --batch-size 32 --test-batch-size 5000 --epochs 10 --lr 0.25 --gamma 0.7 --device cuda --gpu 7 --evaluate train --dataset cifar --model 3 --mutationType r --rmp 5 --padtest 1 --aug 7| tee cifar5_trainAug7.txt
