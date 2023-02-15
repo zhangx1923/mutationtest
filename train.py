@@ -2,6 +2,7 @@ from curses.panel import top_panel
 from gettext import translation
 from random import choices
 from turtle import left, right
+from urllib.request import proxy_bypass
 import torch
 import torch.nn as nn
 import random
@@ -14,10 +15,18 @@ from model import Net, Net1, Net2, Net3
 from tools import print_msg, create_floder
 import datetime
 
+
+prob = 0.0
+
+
+size = 0.25
+
 #generate a random translate on Mnist dataset
 def randomTranslateMnist(i):
-    if random.random() < 0.5:
-        desireSize = 45
+    global prob
+    global size
+    if random.random() < prob:
+        desireSize = 28 * (1+size)
         left = random.randint(-1*(desireSize-28),0) #mnist size 28*28
         #right = random.randint(-28-left,0)
         top = random.randint(-1*(desireSize-28),0)
@@ -28,8 +37,10 @@ def randomTranslateMnist(i):
     return transforms.functional.resize(i, 28)
 #generate a random translate on Cifar dataset
 def randomTranslateCifar(i):
-    if random.random() < 0.75:
-        desireSize = 50
+    global prob
+    global size
+    if random.random() < prob:
+        desireSize = 32 * (1+size)
         left = random.randint(-1*(desireSize-32),0) #cifar size 32*32
         #right = random.randint(-32-left,0)
         top = random.randint(-1*(desireSize-32),0)
@@ -295,63 +306,74 @@ def main():
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
 
-    if args.model == 1 and args.dataset == 'mnist':
-        model = Net1().to(device)
-    elif args.model == 2 and args.dataset == 'mnist':
-        model = Net2().to(device)
-    elif args.model == 3 and args.dataset == 'cifar':
-        model = Net3().to(device)
-    else:
-        print("Wrong parameter! Only support model = 1 or 2 for dataset mnist and model = 3 for cifar!")
-        exit(0)
+    
 
-    optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
-
-    scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+    
 
     #load data
-    train_loader, test_loader = load_data(train_kwargs, test_kwargs, args.dataset, args.aug)
+    probs = [0.25,0.5,0.75,1.0]
+    sizes = [0.25,0.5,0.75,1.0]
+    for tt in probs:
+        global prob
+        prob = tt
+        for ss in sizes:
+            global size
+            size = ss
+            if args.model == 1 and args.dataset == 'mnist':
+                model = Net1().to(device)
+            elif args.model == 2 and args.dataset == 'mnist':
+                model = Net2().to(device)
+            elif args.model == 3 and args.dataset == 'cifar':
+                model = Net3().to(device)
+            else:
+                print("Wrong parameter! Only support model = 1 or 2 for dataset mnist and model = 3 for cifar!")
+                exit(0)
+            optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
-    mutation_types = [i for i in range(1, 14)] if args.mutationType == 's' else [i for i in range(1,8)]
+            scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+            train_loader, test_loader = load_data(train_kwargs, test_kwargs, args.dataset, args.aug)
 
-    print("begin to "+ str(args.evaluate))
+            mutation_types = [i for i in range(1, 14)] if args.mutationType == 's' else [i for i in range(1,8)]
 
-    if args.evaluate == 'train':
-        #train + test
-        for epoch in range(1, args.epochs + 1):
-            train(args, model, device, train_loader, optimizer, epoch, folder_path)
-            #evaluate performance on test data every two epoch
-            if epoch % 2 == 0:
-                test(model, device, test_loader, folder_path, epoch)
-            scheduler.step()
+            print("begin to "+ str(args.evaluate))
+            print("prob=" + str(prob), "size="+ str(size))
 
-        #original version of test_loader
-        test(model, device, test_loader, folder_path, "End")
-        
-        
-        if args.padtest == 1:
-            for reduceFactor in range(1,6):
-                #pad test dataset for different block
-                if args.mutationType == 'r':
+            if args.evaluate == 'train':
+                #train + test
+                for epoch in range(1, args.epochs + 1):
+                    train(args, model, device, train_loader, optimizer, epoch, folder_path)
+                    #evaluate performance on test data every two epoch
+                    if epoch % 2 == 0:
+                        test(model, device, test_loader, folder_path, epoch)
+                    scheduler.step()
+
+                #original version of test_loader
+                test(model, device, test_loader, folder_path, "End")
+                
+                
+                if args.padtest == 1:
+                    for reduceFactor in range(1,6):
+                        #pad test dataset for different block
+                        if args.mutationType == 'r':
+                            for location in range(0, int(args.rmp) * int(args.rmp)):
+                                test_loader_pad = load_data_after_pad(train_kwargs, test_kwargs, args.dataset, args.rmp, location, reduceFactor)
+                                test(model, device, test_loader_pad, folder_path, "End", True, args.rmp, location, reduceFactor)
+                
+                if args.mutationType == 'c' or args.mutationType == 's':
+                    for mt in mutation_types:
+                        test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
+                elif args.mutationType == 'r':
                     for location in range(0, int(args.rmp) * int(args.rmp)):
-                        test_loader_pad = load_data_after_pad(train_kwargs, test_kwargs, args.dataset, args.rmp, location, reduceFactor)
-                        test(model, device, test_loader_pad, folder_path, "End", True, args.rmp, location, reduceFactor)
-        
-        if args.mutationType == 'c' or args.mutationType == 's':
-            for mt in mutation_types:
-                test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
-        elif args.mutationType == 'r':
-            for location in range(0, int(args.rmp) * int(args.rmp)):
-                #print(location)
-                test_mutation(model, device, test_loader, folder_path, 'End', 0, args.mutationType, args.rmp, location)
-        #save model
-        sd_path = args.dataset + "_cnn.pt"
-        torch.save(model.state_dict(), sd_path)
-    else:
-        path = args.dataset + "_cnn.pt"
-        model.load_state_dict(torch.load(path))
-        for mt in mutation_types:
-            test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
+                        #print(location)
+                        test_mutation(model, device, test_loader, folder_path, 'End', 0, args.mutationType, args.rmp, location)
+                #save model
+                sd_path = args.dataset + "_cnn.pt"
+                torch.save(model.state_dict(), sd_path)
+            else:
+                path = args.dataset + "_cnn.pt"
+                model.load_state_dict(torch.load(path))
+                for mt in mutation_types:
+                    test_mutation(model, device, test_loader, folder_path, 'End', mt, args.mutationType)
 
 
 
