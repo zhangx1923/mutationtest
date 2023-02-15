@@ -22,7 +22,14 @@ import numpy as np
 def sigmoid(x):
     return 1.0/(1+np.exp(-x))
 
-def calScore2(a, f, n, alpha, beta, acc, loss):
+def std(a,n):
+    arr = []
+    for i in range(n):
+        for j in range(n):
+            arr.append(a[i][j])
+    return np.std(arr)
+
+def calScore2(a, f, n, alpha, beta, ac, loss):
     s = 0
     sum_f = 0
     sum_a = 0
@@ -39,15 +46,16 @@ def calScore2(a, f, n, alpha, beta, acc, loss):
     acc = math.sqrt(sum_af)
     acc = sigmoid(acc)
 
-    acc_para = acc/loss
-    acc_para = sigmoid(acc_para)
+    # acc_para = ac/loss
+    # acc_para = sigmoid(acc_para)
+    acc_para = acc-sigmoid(loss)
 
     acc_final = (acc+acc_para)
 
     s = alpha*robust + beta*acc_final
-    return s, robust, acc_final, acc
+    return s, robust, acc_final, acc, std(a,n), std(f,n)
 
-def calScore(a, f, n, alpha, beta):
+def calScore(a, f, n, alpha, beta, ac):
     s = 0
     sum_f = 0
     sum_a = 0
@@ -59,7 +67,9 @@ def calScore(a, f, n, alpha, beta):
             sum_a += (a[i][j] - avg) * (a[i][j] - avg)
             sum_af += (f[i][j] - a[i][j]) * (f[i][j] - a[i][j])
     robust = math.sqrt(sum_f) + math.sqrt(sum_a)
-    acc = math.sqrt(sum_af)
+    #robust = sigmoid(robust)
+    acc = ac - math.sqrt(sum_af)/5
+    #acc = sigmoid(acc)
     s = alpha*robust + beta*acc
     return s, robust, acc
 
@@ -82,19 +92,19 @@ def calScore1(a, f, n, alpha, beta):
 alpha = -1
 beta = 1
 n = 3
-# score1, r1, a1 = calScore1(att1, fea1, n, alpha, beta)
-# score2, r2, a2 = calScore1(att2, fea2, n, alpha, beta)
-# score3, r3, a3 = calScore1(att3, fea3, n, alpha, beta)
+score1, r1, a1 = calScore(att1, fea1, n, alpha, beta, acc1)
+score2, r2, a2 = calScore(att2, fea2, n, alpha, beta, acc2)
+score3, r3, a3 = calScore(att3, fea3, n, alpha, beta, acc3)
 
-score1, r1, af1, a1 = calScore2(att1, fea1, n, alpha, beta, acc1, loss1)
-score2, r2, af2, a2 = calScore2(att2, fea2, n, alpha, beta, acc2, loss2)
-score3, r3, af3, a3 = calScore2(att3, fea3, n, alpha, beta, acc3, loss3)
+# score1, r1, af1, a1, std1, std11 = calScore2(att1, fea1, n, alpha, beta, acc1, loss1)
+# score2, r2, af2, a2, std2, std22 = calScore2(att2, fea2, n, alpha, beta, acc2, loss2)
+# score3, r3, af3, a3, std3, std33 = calScore2(att3, fea3, n, alpha, beta, acc3, loss3)
 
-print(score1, r1, af1, a1)
+print(score1, r1, a1)
 print("\r\n")
-print(score2, r2, af2, a2)
+print(score2, r2, a2)
 print("\r\n")
-print(score3, r3, af3, a3)
+print(score3, r3, a3)
 
 
 

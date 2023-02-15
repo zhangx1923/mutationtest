@@ -16,7 +16,7 @@ import datetime
 
 #generate a random translate on Mnist dataset
 def randomTranslateMnist(i):
-    if random.random() < 0.5:
+    if random.random() < 0.75:
         desireSize = 45
         left = random.randint(-1*(desireSize-28),0) #mnist size 28*28
         #right = random.randint(-28-left,0)
@@ -28,7 +28,7 @@ def randomTranslateMnist(i):
     return transforms.functional.resize(i, 28)
 #generate a random translate on Cifar dataset
 def randomTranslateCifar(i):
-    if random.random() < 0.5:
+    if random.random() < 0.75:
         desireSize = 50
         left = random.randint(-1*(desireSize-32),0) #cifar size 32*32
         #right = random.randint(-32-left,0)
