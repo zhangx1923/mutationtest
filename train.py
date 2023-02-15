@@ -26,7 +26,7 @@ def randomTranslateMnist(i):
     global prob
     global size
     if random.random() < prob:
-        desireSize = 28 * (1+size)
+        desireSize = int(28 * (1+size))
         left = random.randint(-1*(desireSize-28),0) #mnist size 28*28
         #right = random.randint(-28-left,0)
         top = random.randint(-1*(desireSize-28),0)
@@ -40,7 +40,7 @@ def randomTranslateCifar(i):
     global prob
     global size
     if random.random() < prob:
-        desireSize = 32 * (1+size)
+        desireSize = int(32 * (1+size))
         left = random.randint(-1*(desireSize-32),0) #cifar size 32*32
         #right = random.randint(-32-left,0)
         top = random.randint(-1*(desireSize-32),0)
