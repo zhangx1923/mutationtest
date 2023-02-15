@@ -16,7 +16,7 @@ import datetime
 
 #generate a random translate on Mnist dataset
 def randomTranslateMnist(i):
-    if random.random() < 0.75:
+    if random.random() < 0.5:
         desireSize = 45
         left = random.randint(-1*(desireSize-28),0) #mnist size 28*28
         #right = random.randint(-28-left,0)
