@@ -35,6 +35,23 @@ def randomTranslateMnist(i):
         res = transforms.functional.crop(i, left = left, top = top, height = desireSize, width = desireSize)
         return transforms.functional.resize(res, 28)
     return transforms.functional.resize(i, 28)
+
+def randomTranslateMnist1(i):
+    global prob
+    global size
+
+    
+    #transforms.Pad(padding=[left,top,right,bot]
+    if random.random() < prob:
+        desireSize = int(28 * (1+size))
+        left = random.randint(-1*(desireSize-28),0) #mnist size 28*28
+        #right = random.randint(-28-left,0)
+        top = random.randint(-1*(desireSize-28),0)
+        #bot = random.randint(-28-top,0)
+        #res = transforms.functional.crop(i, left = left, top = top, height = 28+(-1)*top+(-1)*bot, width = 28+(-1)*left+(-1)*right)
+        res = transforms.functional.crop(i, left = left, top = top, height = desireSize, width = desireSize)
+        return transforms.functional.resize(res, 28)
+    return transforms.functional.resize(i, 28)
 #generate a random translate on Cifar dataset
 def randomTranslateCifar(i):
     global prob
@@ -311,8 +328,8 @@ def main():
     
 
     #load data
-    probs = [0.25,0.5,0.75,1.0]
-    sizes = [0.25,0.5,0.75,1.0]
+    probs = [0.1,0.2]
+    sizes = [0.1,0.2]
     for tt in probs:
         global prob
         prob = tt
