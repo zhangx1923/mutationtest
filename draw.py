@@ -36,7 +36,7 @@ def calNorm(a):
             a[i][j] = a[i][j] / sum
     return a
 
-h1 = calNorm(a3)
+h1 = calNorm(f1)
 print(h1)
 for i in range(len(zs)):
     z = zs[i]
@@ -44,10 +44,11 @@ for i in range(len(zs)):
     height = np.array(h1[i])
     axes3d.bar(left, height, zs=z, zdir='x',
                color=['green', 'blue', 'orange', 'purple', 'red', 'black', 'gray', 'orange', 'green', 'cyan'])
-plt.xticks(zs, ['1', '2', '3'])
-plt.yticks(left, ['1','2','3'])
-plt.xlabel('X')
-plt.ylabel('Y')
+plt.xticks(zs, ['1', '2', '3'],fontsize=14)
+plt.yticks(left, ['1','2','3'],fontsize=14)
+plt.xlabel(' ',fontsize=14)
+plt.ylabel(' ',fontsize=14)
+axes3d.tick_params(axis='z',labelsize=14)
 plt.show() 
 
 
