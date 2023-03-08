@@ -12,4 +12,4 @@ y2 = [1/(n*n)]*9
 y3 = y1
 y4 = [0.1]*9
 y5 = [1]*9
-print(BCE(y2,y1), BCE(y3,y2), BCE(y5,y4))
+print(BCE(y2,y1), BCE(y2,y1), BCE(y5,y4))

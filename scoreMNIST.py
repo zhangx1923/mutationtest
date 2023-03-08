@@ -183,7 +183,7 @@ loss3 = 0.7049
 
 score7, r7, a7 = calScore1(attc,ascorec, feac, 3, -1, 1, accc)
 print("!!!!!!!!!!!!!!!!!!!!!!!!")
-print(score7, r7, a7)
+print(score7, r7, a7) 
 print("\r\n")
 
 f = calNorm(mo2fea(c_1_mo,c_1_acc,3))
