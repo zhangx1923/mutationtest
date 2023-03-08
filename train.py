@@ -328,7 +328,7 @@ def main():
     
 
     #load data
-    probs = [0.75,1.0]
+    probs = [0.1,0.2,0.25,0.5,0.75,1.0]
     sizes = [0.1,0.2,0.25,0.5,0.75,1.0]
     for tt in probs:
         global prob
